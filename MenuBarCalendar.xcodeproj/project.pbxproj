@@ -1,0 +1,586 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F6D5DE142BF4B5DF0090B380 /* MenuBarCalendarApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D5DE132BF4B5DF0090B380 /* MenuBarCalendarApp.swift */; };
+		F6D5DE162BF4B5DF0090B380 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D5DE152BF4B5DF0090B380 /* ContentView.swift */; };
+		F6D5DE182BF4B5E00090B380 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6D5DE172BF4B5E00090B380 /* Assets.xcassets */; };
+		F6D5DE1B2BF4B5E00090B380 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F6D5DE1A2BF4B5E00090B380 /* Preview Assets.xcassets */; };
+		F6D5DE262BF4B5E00090B380 /* MenuBarCalendarTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D5DE252BF4B5E00090B380 /* MenuBarCalendarTests.swift */; };
+		F6D5DE302BF4B5E00090B380 /* MenuBarCalendarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D5DE2F2BF4B5E00090B380 /* MenuBarCalendarUITests.swift */; };
+		F6D5DE322BF4B5E00090B380 /* MenuBarCalendarUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6D5DE312BF4B5E00090B380 /* MenuBarCalendarUITestsLaunchTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F6D5DE222BF4B5E00090B380 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6D5DE082BF4B5DF0090B380 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6D5DE0F2BF4B5DF0090B380;
+			remoteInfo = MenuBarCalendar;
+		};
+		F6D5DE2C2BF4B5E00090B380 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6D5DE082BF4B5DF0090B380 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F6D5DE0F2BF4B5DF0090B380;
+			remoteInfo = MenuBarCalendar;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F6D5DE102BF4B5DF0090B380 /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6D5DE132BF4B5DF0090B380 /* MenuBarCalendarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarApp.swift; sourceTree = "<group>"; };
+		F6D5DE152BF4B5DF0090B380 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F6D5DE172BF4B5E00090B380 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F6D5DE1A2BF4B5E00090B380 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F6D5DE1C2BF4B5E00090B380 /* MenuBarCalendar.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MenuBarCalendar.entitlements; sourceTree = "<group>"; };
+		F6D5DE212BF4B5E00090B380 /* MenuBarCalendarTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MenuBarCalendarTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6D5DE252BF4B5E00090B380 /* MenuBarCalendarTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarTests.swift; sourceTree = "<group>"; };
+		F6D5DE2B2BF4B5E00090B380 /* MenuBarCalendarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MenuBarCalendarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6D5DE2F2BF4B5E00090B380 /* MenuBarCalendarUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarUITests.swift; sourceTree = "<group>"; };
+		F6D5DE312BF4B5E00090B380 /* MenuBarCalendarUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarUITestsLaunchTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F6D5DE0D2BF4B5DF0090B380 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6D5DE1E2BF4B5E00090B380 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6D5DE282BF4B5E00090B380 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F6D5DE072BF4B5DF0090B380 = {
+			isa = PBXGroup;
+			children = (
+				F6D5DE122BF4B5DF0090B380 /* MenuBarCalendar */,
+				F6D5DE242BF4B5E00090B380 /* MenuBarCalendarTests */,
+				F6D5DE2E2BF4B5E00090B380 /* MenuBarCalendarUITests */,
+				F6D5DE112BF4B5DF0090B380 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F6D5DE112BF4B5DF0090B380 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F6D5DE102BF4B5DF0090B380 /* MenuBarCalendar.app */,
+				F6D5DE212BF4B5E00090B380 /* MenuBarCalendarTests.xctest */,
+				F6D5DE2B2BF4B5E00090B380 /* MenuBarCalendarUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F6D5DE122BF4B5DF0090B380 /* MenuBarCalendar */ = {
+			isa = PBXGroup;
+			children = (
+				F6D5DE132BF4B5DF0090B380 /* MenuBarCalendarApp.swift */,
+				F6D5DE152BF4B5DF0090B380 /* ContentView.swift */,
+				F6D5DE172BF4B5E00090B380 /* Assets.xcassets */,
+				F6D5DE1C2BF4B5E00090B380 /* MenuBarCalendar.entitlements */,
+				F6D5DE192BF4B5E00090B380 /* Preview Content */,
+			);
+			path = MenuBarCalendar;
+			sourceTree = "<group>";
+		};
+		F6D5DE192BF4B5E00090B380 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				F6D5DE1A2BF4B5E00090B380 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		F6D5DE242BF4B5E00090B380 /* MenuBarCalendarTests */ = {
+			isa = PBXGroup;
+			children = (
+				F6D5DE252BF4B5E00090B380 /* MenuBarCalendarTests.swift */,
+			);
+			path = MenuBarCalendarTests;
+			sourceTree = "<group>";
+		};
+		F6D5DE2E2BF4B5E00090B380 /* MenuBarCalendarUITests */ = {
+			isa = PBXGroup;
+			children = (
+				F6D5DE2F2BF4B5E00090B380 /* MenuBarCalendarUITests.swift */,
+				F6D5DE312BF4B5E00090B380 /* MenuBarCalendarUITestsLaunchTests.swift */,
+			);
+			path = MenuBarCalendarUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F6D5DE0F2BF4B5DF0090B380 /* MenuBarCalendar */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6D5DE352BF4B5E00090B380 /* Build configuration list for PBXNativeTarget "MenuBarCalendar" */;
+			buildPhases = (
+				F6D5DE0C2BF4B5DF0090B380 /* Sources */,
+				F6D5DE0D2BF4B5DF0090B380 /* Frameworks */,
+				F6D5DE0E2BF4B5DF0090B380 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MenuBarCalendar;
+			productName = MenuBarCalendar;
+			productReference = F6D5DE102BF4B5DF0090B380 /* MenuBarCalendar.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F6D5DE202BF4B5E00090B380 /* MenuBarCalendarTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6D5DE382BF4B5E00090B380 /* Build configuration list for PBXNativeTarget "MenuBarCalendarTests" */;
+			buildPhases = (
+				F6D5DE1D2BF4B5E00090B380 /* Sources */,
+				F6D5DE1E2BF4B5E00090B380 /* Frameworks */,
+				F6D5DE1F2BF4B5E00090B380 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F6D5DE232BF4B5E00090B380 /* PBXTargetDependency */,
+			);
+			name = MenuBarCalendarTests;
+			productName = MenuBarCalendarTests;
+			productReference = F6D5DE212BF4B5E00090B380 /* MenuBarCalendarTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F6D5DE2A2BF4B5E00090B380 /* MenuBarCalendarUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F6D5DE3B2BF4B5E00090B380 /* Build configuration list for PBXNativeTarget "MenuBarCalendarUITests" */;
+			buildPhases = (
+				F6D5DE272BF4B5E00090B380 /* Sources */,
+				F6D5DE282BF4B5E00090B380 /* Frameworks */,
+				F6D5DE292BF4B5E00090B380 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F6D5DE2D2BF4B5E00090B380 /* PBXTargetDependency */,
+			);
+			name = MenuBarCalendarUITests;
+			productName = MenuBarCalendarUITests;
+			productReference = F6D5DE2B2BF4B5E00090B380 /* MenuBarCalendarUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F6D5DE082BF4B5DF0090B380 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1530;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					F6D5DE0F2BF4B5DF0090B380 = {
+						CreatedOnToolsVersion = 15.3;
+					};
+					F6D5DE202BF4B5E00090B380 = {
+						CreatedOnToolsVersion = 15.3;
+						TestTargetID = F6D5DE0F2BF4B5DF0090B380;
+					};
+					F6D5DE2A2BF4B5E00090B380 = {
+						CreatedOnToolsVersion = 15.3;
+						TestTargetID = F6D5DE0F2BF4B5DF0090B380;
+					};
+				};
+			};
+			buildConfigurationList = F6D5DE0B2BF4B5DF0090B380 /* Build configuration list for PBXProject "MenuBarCalendar" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F6D5DE072BF4B5DF0090B380;
+			productRefGroup = F6D5DE112BF4B5DF0090B380 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F6D5DE0F2BF4B5DF0090B380 /* MenuBarCalendar */,
+				F6D5DE202BF4B5E00090B380 /* MenuBarCalendarTests */,
+				F6D5DE2A2BF4B5E00090B380 /* MenuBarCalendarUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F6D5DE0E2BF4B5DF0090B380 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6D5DE1B2BF4B5E00090B380 /* Preview Assets.xcassets in Resources */,
+				F6D5DE182BF4B5E00090B380 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6D5DE1F2BF4B5E00090B380 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6D5DE292BF4B5E00090B380 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F6D5DE0C2BF4B5DF0090B380 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6D5DE162BF4B5DF0090B380 /* ContentView.swift in Sources */,
+				F6D5DE142BF4B5DF0090B380 /* MenuBarCalendarApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6D5DE1D2BF4B5E00090B380 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6D5DE262BF4B5E00090B380 /* MenuBarCalendarTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F6D5DE272BF4B5E00090B380 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F6D5DE302BF4B5E00090B380 /* MenuBarCalendarUITests.swift in Sources */,
+				F6D5DE322BF4B5E00090B380 /* MenuBarCalendarUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F6D5DE232BF4B5E00090B380 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6D5DE0F2BF4B5DF0090B380 /* MenuBarCalendar */;
+			targetProxy = F6D5DE222BF4B5E00090B380 /* PBXContainerItemProxy */;
+		};
+		F6D5DE2D2BF4B5E00090B380 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F6D5DE0F2BF4B5DF0090B380 /* MenuBarCalendar */;
+			targetProxy = F6D5DE2C2BF4B5E00090B380 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		F6D5DE332BF4B5E00090B380 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F6D5DE342BF4B5E00090B380 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F6D5DE362BF4B5E00090B380 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MenuBarCalendar/MenuBarCalendar.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MenuBarCalendar/Preview Content\"";
+				DEVELOPMENT_TEAM = 4PX9U8G6E4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.kevinploss.MenuBarCalendar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F6D5DE372BF4B5E00090B380 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MenuBarCalendar/MenuBarCalendar.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MenuBarCalendar/Preview Content\"";
+				DEVELOPMENT_TEAM = 4PX9U8G6E4;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.kevinploss.MenuBarCalendar;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F6D5DE392BF4B5E00090B380 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PX9U8G6E4;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.kevinploss.MenuBarCalendarTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MenuBarCalendar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MenuBarCalendar";
+			};
+			name = Debug;
+		};
+		F6D5DE3A2BF4B5E00090B380 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PX9U8G6E4;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.kevinploss.MenuBarCalendarTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MenuBarCalendar.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MenuBarCalendar";
+			};
+			name = Release;
+		};
+		F6D5DE3C2BF4B5E00090B380 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PX9U8G6E4;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.kevinploss.MenuBarCalendarUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = MenuBarCalendar;
+			};
+			name = Debug;
+		};
+		F6D5DE3D2BF4B5E00090B380 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PX9U8G6E4;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.kevinploss.MenuBarCalendarUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = MenuBarCalendar;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F6D5DE0B2BF4B5DF0090B380 /* Build configuration list for PBXProject "MenuBarCalendar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6D5DE332BF4B5E00090B380 /* Debug */,
+				F6D5DE342BF4B5E00090B380 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6D5DE352BF4B5E00090B380 /* Build configuration list for PBXNativeTarget "MenuBarCalendar" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6D5DE362BF4B5E00090B380 /* Debug */,
+				F6D5DE372BF4B5E00090B380 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6D5DE382BF4B5E00090B380 /* Build configuration list for PBXNativeTarget "MenuBarCalendarTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6D5DE392BF4B5E00090B380 /* Debug */,
+				F6D5DE3A2BF4B5E00090B380 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F6D5DE3B2BF4B5E00090B380 /* Build configuration list for PBXNativeTarget "MenuBarCalendarUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F6D5DE3C2BF4B5E00090B380 /* Debug */,
+				F6D5DE3D2BF4B5E00090B380 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F6D5DE082BF4B5DF0090B380 /* Project object */;
+}
