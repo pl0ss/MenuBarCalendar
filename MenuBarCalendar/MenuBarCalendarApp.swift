@@ -9,6 +9,26 @@ import SwiftUI
 import EventKit
 import Foundation
 
+
+class Event {
+    var title: String
+    var startDate: Date
+    var endDate: Date
+    var location: String
+    
+    init(title: String, startDate: Date, endDate: Date, location: String) {
+        self.title = title
+        self.startDate = startDate
+        self.endDate = endDate
+        self.location = location
+    }
+}
+
+let nextEvents = getNextEvents(numberOfEvents: 3) // nächsten X Events
+
+
+// ToDo: Alle 5min neuladen
+
 @main
 struct CustomApp: App {
     var body: some Scene {
@@ -19,8 +39,9 @@ struct CustomApp: App {
             // AppMenu()
         // }
         
+        
         // Text in MenuBar
-        MenuBarExtra(getNextEventString()) {
+        MenuBarExtra(getMenuBarText()) {
             AppMenu()
         }
     }
@@ -28,21 +49,23 @@ struct CustomApp: App {
 
 struct AppMenu: View {
     func action1() {}
-    // func action2() {}
-    // func action3() {}
-
-    var body: some View {
-        Button(action: action1, label: { Text("Action 1") })
-    //     Button(action: action2, label: { Text("Action 2") })
-    //     // Divider()
-    //     Button(action: action3, label: { Text("Action 3") })
+    func action2() {}
+    func action3() {}
+    func quit() {
+        exit(0)
+    }
+    
+    var body: some View { // ToDo Buttons zu Text
+        Button(action: action1, label: { Text(getActionText(num: 0)) })
+        Button(action: action2, label: { Text(getActionText(num: 1)) })
+        Button(action: action3, label: { Text(getActionText(num: 2)) })
+        Divider()
+        Button(action: quit, label: { Text("Quit") })
     }
 }
 
 
-func getNextEventString() -> String {
-    var text = "-"
-    
+func getNextEvents(numberOfEvents: Int) -> [Event] {
     let eventStore = EKEventStore()
     
     eventStore.requestFullAccessToEvents { (granted, error) in
@@ -52,15 +75,9 @@ func getNextEventString() -> String {
         } else {
             print("Zugriff auf Kalender abgelehnt oder Fehler aufgetreten: \(error?.localizedDescription ?? "Unbekannter Fehler")")
             // Hier können Sie eine Fehlerbehandlung implementieren
-            text = "Kein Zugriff"
         }
     }
     
-    // Ab hier abändern
-    
-    // Initialize the store.
-    var store = EKEventStore()
-
     
     let calendar = Calendar.current
     
@@ -86,41 +103,99 @@ func getNextEventString() -> String {
         events = eventStore.events(matching: aPredicate)
     }
     
-    
-    
-    
-    //! Hier gehts weiter
-    // ===============================================
-    
+
     
     // Aktuelles Datum und Uhrzeit
     let dateFormatter = DateFormatter()
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     dateFormatter.timeZone = TimeZone(identifier: "UTC")
+    let nowUTC = Date()
+    // let utcDateString = dateFormatter.string(from: nowUTC)
 
-    let currentUTCDate = Date()
-    let utcDateString = dateFormatter.string(from: currentUTCDate)
+    // print("Aktuelle UTC-Zeit: \(utcDateString)")
+    // print("")
+    // print("")
+    
+    
+    var nextEvents: [Event] = []
 
-    print("Aktuelle UTC-Zeit: \(utcDateString)")
-    print("")
-    print("")
-    
-    
-    
     
     // Events ausgeben
     if let events = events {
         for event in events {
             // print(event)
-            print("Event Properties:")
-            print("Title: \(event.title)")
-            print("Start Date: \(event.startDate)")
-            print("End Date: \(event.endDate)")
-            print("")
+            // print("Title: \(event.title)")
+            // print("Start Date: \(event.startDate)")
+            // print("End Date: \(event.endDate)")
+            // print("")
+            
+            
+            if(event.startDate > nowUTC) {
+                // return event.title
+                
+                let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "")
+                
+                nextEvents.append(thisEvent)
+                if(nextEvents.count == numberOfEvents) {
+                    break
+                }
+            }
         }
     } else {
         print("Keine Events gefunden")
     }
     
-    return text;
+    return nextEvents;
+}
+
+
+func getMenuBarText() -> String {
+    var menuBarText: String
+    
+    if nextEvents.isEmpty {
+        menuBarText = "Keine Termine"
+    } else {
+        menuBarText = eventToMenuBarText(event: nextEvents[0])
+    }
+    
+    return menuBarText
+}
+
+func eventToMenuBarText(event: Event) -> String {
+    let dateFormatter = DateFormatter()
+    dateFormatter.timeZone = TimeZone.current
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    let localDateString = dateFormatter.string(from: event.startDate)
+    
+    let components = localDateString.components(separatedBy: " ")[1].split(separator: ":")
+    let startTime = components.prefix(2).joined(separator: ":")
+    return startTime
+}
+
+
+func getActionText(num: Int) -> String {
+    var actionText: String
+    
+    if nextEvents.count <= num {
+        actionText = ""
+    } else {
+        actionText = eventToActionText(event: nextEvents[num])
+    }
+    
+    return actionText
+}
+
+func eventToActionText(event: Event) -> String {
+    
+    let dateFormatter = DateFormatter()
+    dateFormatter.timeZone = TimeZone.current
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    let localDateString = dateFormatter.string(from: event.startDate)
+    
+    let components = localDateString.components(separatedBy: " ")[1].split(separator: ":")
+    let startTime = components.prefix(2).joined(separator: ":")
+    
+    let actionText = "\(startTime) \(event.title) \(event.location)"
+    
+    return actionText
 }
