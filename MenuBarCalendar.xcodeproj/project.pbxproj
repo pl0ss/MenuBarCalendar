@@ -34,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F69C2A6C2BF61748004658A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F6D5DE102BF4B5DF0090B380 /* MenuBarCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MenuBarCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6D5DE132BF4B5DF0090B380 /* MenuBarCalendarApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarCalendarApp.swift; sourceTree = "<group>"; };
 		F6D5DE152BF4B5DF0090B380 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -95,6 +96,7 @@
 		F6D5DE122BF4B5DF0090B380 /* MenuBarCalendar */ = {
 			isa = PBXGroup;
 			children = (
+				F69C2A6C2BF61748004658A9 /* Info.plist */,
 				F6D5DE132BF4B5DF0090B380 /* MenuBarCalendarApp.swift */,
 				F6D5DE152BF4B5DF0090B380 /* ContentView.swift */,
 				F6D5DE172BF4B5E00090B380 /* Assets.xcassets */,
@@ -429,6 +431,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MenuBarCalendar/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -456,6 +459,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MenuBarCalendar/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
