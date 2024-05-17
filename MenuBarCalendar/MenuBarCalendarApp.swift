@@ -20,13 +20,15 @@ class Event {
     var endDate: Date
     var location: String
     var differenct_date: Bool // für die Unterteilung zischen Heute und Morgen
+    var most_important_event: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     
-    init(title: String, startDate: Date, endDate: Date, location: String, differenct_date: Bool) {
+    init(title: String, startDate: Date, endDate: Date, location: String, differenct_date: Bool, most_important_event: Bool) {
         self.title = title
         self.startDate = startDate
         self.endDate = endDate
         self.location = location
         self.differenct_date = differenct_date
+        self.most_important_event = most_important_event
     }
 }
 
@@ -35,6 +37,8 @@ private var myEvents = getNextEvents()
 
 
 // ToDo: Alle 5min neuladen
+
+// ToDo: Settings
 
 @main
 struct CustomApp: App {
@@ -61,22 +65,30 @@ struct AppMenu: View {
         exit(0)
     }
     
+    func settings_open() {
+        exit(0)
+    }
+    
     
     func getBodyEventElements() -> some View {
         // ToDo Buttons zu Text
-        // ToDo Termin, welcher in menuBar angezigt wird, fett machen
         
         return VStack {
-            Button(action: action1, label: { Text("Heute") })
+            Button(action: action1, label: { Text("Heute").font(.system(size: 14, weight: .bold)) })
             
             ForEach(myEvents.indices, id: \.self) { index in
                 // für die Unterteilung zischen Heute und Morgen
                 if(myEvents[index].differenct_date) {
                     Divider()
-                    Button(action: action1, label: { Text("Morgen") })
+                    Button(action: action1, label: { Text("Morgen").font(.system(size: 14, weight: .bold)) })
                 }
                 
-                Button(action: action1, label: { Text(getActionText(num: index)) })
+                if myEvents[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
+                    Button(action: action1, label: { Text(getActionText(num: index)).underline() })
+                } else {
+                    Button(action: action1, label: { Text(getActionText(num: index)) })
+                }
+
             }
 
             // Button(action: action1, label: { Text(getActionText(num: 0)) })
@@ -93,6 +105,7 @@ struct AppMenu: View {
         getBodyEventElements()
 
         Divider()
+        Button(action: settings_open, label: { Text("Settings") })
         Button(action: quit, label: { Text("Quit") })
     }
 }
@@ -159,6 +172,7 @@ func getNextEvents() -> [Event] {
 
     
     var lastEvent: Event? = nil
+    var most_important_event_set = false
     
     // Events ausgeben
     if let events = events {
@@ -180,7 +194,14 @@ func getNextEvents() -> [Event] {
                     }
                 }
                 
-                let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "", differenct_date:  differenct_date)
+                var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
+                let nowUTC = getUTCnow()
+                if event.startDate > nowUTC && !most_important_event_set {
+                    most_important_event = true
+                    most_important_event_set = true
+                }
+                
+                let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "", differenct_date:  differenct_date, most_important_event: most_important_event)
                 
                 nextEvents.append(thisEvent)
                 lastEvent = thisEvent
