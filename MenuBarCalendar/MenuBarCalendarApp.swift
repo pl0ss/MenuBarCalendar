@@ -19,12 +19,14 @@ class Event {
     var startDate: Date
     var endDate: Date
     var location: String
+    var differenct_date: Bool // für die Unterteilung zischen Heute und Morgen
     
-    init(title: String, startDate: Date, endDate: Date, location: String) {
+    init(title: String, startDate: Date, endDate: Date, location: String, differenct_date: Bool) {
         self.title = title
         self.startDate = startDate
         self.endDate = endDate
         self.location = location
+        self.differenct_date = differenct_date
     }
 }
 
@@ -64,18 +66,17 @@ struct AppMenu: View {
         // ToDo Buttons zu Text
         // ToDo Termin, welcher in menuBar angezigt wird, fett machen
         
-        var lastEvent: Event? = nil
         return VStack {
+            Button(action: action1, label: { Text("Heute") })
+            
             ForEach(myEvents.indices, id: \.self) { index in
-                let thisEvent = myEvents[index]
-                Button(action: action1, label: { Text(getActionText(num: index)) })
-                
-                // ToDo: Divider() zwischen den Events von heute und morgen
-                if(true) { //! lastEvent && dateOnly(lastEvent.startDate) != dateOnly(thisEvent.startDate)
+                // für die Unterteilung zischen Heute und Morgen
+                if(myEvents[index].differenct_date) {
                     Divider()
+                    Button(action: action1, label: { Text("Morgen") })
                 }
                 
-                // lastEvent == thisEvent //* Diese Zeile
+                Button(action: action1, label: { Text(getActionText(num: index)) })
             }
 
             // Button(action: action1, label: { Text(getActionText(num: 0)) })
@@ -157,6 +158,8 @@ func getNextEvents() -> [Event] {
     var nextEvents: [Event] = []
 
     
+    var lastEvent: Event? = nil
+    
     // Events ausgeben
     if let events = events {
         for event in events {
@@ -170,9 +173,17 @@ func getNextEvents() -> [Event] {
             if(event.endDate > nowUTC) {
                 // return event.title
                 
-                let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "")
+                var differenct_date = false // für die Unterteilung zischen Heute und Morgen
+                if lastEvent != nil {
+                    if (lastEvent != nil) && dateOnly(date: lastEvent!.startDate) != dateOnly(date: event.startDate) {
+                        differenct_date = true
+                    }
+                }
+                
+                let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "", differenct_date:  differenct_date)
                 
                 nextEvents.append(thisEvent)
+                lastEvent = thisEvent
             }
         }
     } else {
