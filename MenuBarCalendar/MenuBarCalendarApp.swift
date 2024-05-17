@@ -53,26 +53,48 @@ struct CustomApp: App {
 
 struct AppMenu: View {
     func action1() {}
-    func action2() {}
-    func action3() {}
+    // func action2() {}
+    // func action3() {}
     func quit() {
         exit(0)
     }
     
-    var body: some View {
+    
+    func getBodyEventElements() -> some View {
         // ToDo Buttons zu Text
-        // ToDo nur so viele zeilen anzeigen wie es events gibt
-        // ToDo Alle Termine anzeigen, in welchen ich mich zeitlich gerade befinde
-        // ToDo Nächsten 3 Termine anzeigen, falls im array vorhanden ("array vorhanden" = "also heute oder morgen")
         // ToDo Termin, welcher in menuBar angezigt wird, fett machen
-        Button(action: action1, label: { Text(getActionText(num: 0)) })
-        Button(action: action2, label: { Text(getActionText(num: 1)) })
-        Button(action: action3, label: { Text(getActionText(num: 2)) })
+        
+        var lastEvent: Event? = nil
+        return VStack {
+            ForEach(myEvents.indices, id: \.self) { index in
+                let thisEvent = myEvents[index]
+                Button(action: action1, label: { Text(getActionText(num: index)) })
+                
+                // ToDo: Divider() zwischen den Events von heute und morgen
+                if(true) { //! lastEvent && lastEvent.date != thisEvent.date
+                    Divider()
+                }
+                
+                // lastEvent == thisEvent //* Diese Zeile
+            }
+
+            // Button(action: action1, label: { Text(getActionText(num: 0)) })
+            // Button(action: action1, label: { Text(getActionText(num: 1)) })
+            // Button(action: action1, label: { Text(getActionText(num: 2)) })
+        }
+    }
+    
+    
+    var body: some View {
+        Button(action: action1, label: { Text("Termin der nächsten 24h") })
+        Divider()
+        
+        getBodyEventElements()
+
         Divider()
         Button(action: quit, label: { Text("Quit") })
     }
 }
-
 
 func getNextEvents() -> [Event] {
     let eventStore = EKEventStore()
