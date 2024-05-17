@@ -11,7 +11,7 @@ import Foundation
 
 
 //* Setting
-let menuBarTextType = 2 // 0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"
+private let menuBarTextType = 2 // 0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"
 
 
 class Event {
@@ -38,7 +38,10 @@ private var myEvents = getNextEvents()
 
 // ToDo: Alle 5min neuladen
 
-// ToDo: Settings
+// ToDo: Settings:
+    // menuBarTextType
+    // Link zu GitHub
+    // Aktualisierungsintervall wählen: 1min 5min 15min
 
 @main
 struct CustomApp: App {
@@ -66,7 +69,7 @@ struct AppMenu: View {
     }
     
     func settings_open() {
-        exit(0)
+
     }
     
     
