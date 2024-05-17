@@ -10,6 +10,10 @@ import EventKit
 import Foundation
 
 
+//* Setting
+let menuBarTextType = 2 // 0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"
+
+
 class Event {
     var title: String
     var startDate: Date
@@ -24,7 +28,8 @@ class Event {
     }
 }
 
-let nextEvents = getNextEvents(numberOfEvents: 3) // nächsten X Events
+
+private var myEvents = getNextEvents()
 
 
 // ToDo: Alle 5min neuladen
@@ -34,7 +39,6 @@ struct CustomApp: App {
     var body: some Scene {
         
         // Icon in MenuBar
-        // Text statt icon: systemImage entfernen
         // MenuBarExtra("UtilityApp", systemImage: "hammer") {
             // AppMenu()
         // }
@@ -55,7 +59,12 @@ struct AppMenu: View {
         exit(0)
     }
     
-    var body: some View { // ToDo Buttons zu Text
+    var body: some View {
+        // ToDo Buttons zu Text
+        // ToDo nur so viele zeilen anzeigen wie es events gibt
+        // ToDo Alle Termine anzeigen, in welchen ich mich zeitlich gerade befinde
+        // ToDo Nächsten 3 Termine anzeigen, falls im array vorhanden ("array vorhanden" = "also heute oder morgen")
+        // ToDo Termin, welcher in menuBar angezigt wird, fett machen
         Button(action: action1, label: { Text(getActionText(num: 0)) })
         Button(action: action2, label: { Text(getActionText(num: 1)) })
         Button(action: action3, label: { Text(getActionText(num: 2)) })
@@ -65,7 +74,7 @@ struct AppMenu: View {
 }
 
 
-func getNextEvents(numberOfEvents: Int) -> [Event] {
+func getNextEvents() -> [Event] {
     let eventStore = EKEventStore()
     
     eventStore.requestFullAccessToEvents { (granted, error) in
@@ -82,18 +91,18 @@ func getNextEvents(numberOfEvents: Int) -> [Event] {
     let calendar = Calendar.current
     
     // Startdatum festlegen
-    var todayComponents = DateComponents()
-    todayComponents.day = 0
-    let today = calendar.date(byAdding: todayComponents, to: Date(), wrappingComponents: false)
+    var date1components = DateComponents()
+    date1components.day = -1
+    let date1 = calendar.date(byAdding: date1components, to: Date(), wrappingComponents: false)
     
     // Enddatum festlegen
-    var tomorrowComponents = DateComponents()
-    tomorrowComponents.day = +1
-    let tomorrow = calendar.date(byAdding: tomorrowComponents, to: Date(), wrappingComponents: false)
+    var date2components = DateComponents()
+    date2components.day = +1
+    let date2 = calendar.date(byAdding: date2components, to: Date(), wrappingComponents: false)
     
     // Predicate erstellen
     var predicate: NSPredicate? = nil
-    if let anAgo = today, let aNow = tomorrow {
+    if let anAgo = date1, let aNow = date2 {
         predicate = eventStore.predicateForEvents(withStart: anAgo, end: aNow, calendars: nil)
     }
     
@@ -104,17 +113,9 @@ func getNextEvents(numberOfEvents: Int) -> [Event] {
     }
     
 
-    
-    // Aktuelles Datum und Uhrzeit
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    dateFormatter.timeZone = TimeZone(identifier: "UTC")
-    let nowUTC = Date()
+    let nowUTC = getUTCnow()
     // let utcDateString = dateFormatter.string(from: nowUTC)
-
     // print("Aktuelle UTC-Zeit: \(utcDateString)")
-    // print("")
-    // print("")
     
     
     var nextEvents: [Event] = []
@@ -129,16 +130,13 @@ func getNextEvents(numberOfEvents: Int) -> [Event] {
             // print("End Date: \(event.endDate)")
             // print("")
             
-            
-            if(event.startDate > nowUTC) {
+            // if(event.startDate > nowUTC) {
+            if(event.endDate > nowUTC) {
                 // return event.title
                 
                 let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "")
                 
                 nextEvents.append(thisEvent)
-                if(nextEvents.count == numberOfEvents) {
-                    break
-                }
             }
         }
     } else {
@@ -150,52 +148,109 @@ func getNextEvents(numberOfEvents: Int) -> [Event] {
 
 
 func getMenuBarText() -> String {
+    // Sucht den ersten Termin, welcher in der Zukunft beginnt
+        // und gibt diesen als "menuBarText" zurück
+    
+    var nextEvent: Event? = nil
+    var lastEvent: Event? = nil
+    
+    let nowUTC = getUTCnow()
+    for i in 0..<myEvents.count {
+        if myEvents[i].startDate > nowUTC {
+            nextEvent = myEvents[i]
+            
+            if(i > 0) {
+                lastEvent = myEvents[i - 1]
+            }
+            break
+        }
+    }
+    
+    
     var menuBarText: String
     
-    if nextEvents.isEmpty {
-        menuBarText = "Keine Termine"
+    if nextEvent != nil && lastEvent != nil {
+        menuBarText = eventToMenuBarText(nextEvent: nextEvent!, lastEvent: lastEvent!)
+    } else if nextEvent != nil {
+        menuBarText = eventToMenuBarText(nextEvent: nextEvent!)
     } else {
-        menuBarText = eventToMenuBarText(event: nextEvents[0])
+        menuBarText = "Keine Termine"
     }
     
     return menuBarText
 }
 
-func eventToMenuBarText(event: Event) -> String {
+func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let localDateString = dateFormatter.string(from: event.startDate)
     
-    let components = localDateString.components(separatedBy: " ")[1].split(separator: ":")
-    let startTime = components.prefix(2).joined(separator: ":")
-    return startTime
+    if nextEvent == nil {
+        return ""
+    }
+    
+    let startDateLocal = dateFormatter.string(from: nextEvent!.startDate)
+    let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+    let startTime = startDateLocal_components.prefix(2).joined(separator: ":")
+    
+    let endDateLocal = dateFormatter.string(from: nextEvent!.endDate)
+    let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+    let endTime = endDateLocal_components.prefix(2).joined(separator: ":")
+    
+    var lastEndTime = ""
+    if lastEvent != nil {
+        let lastEndDateLocal = dateFormatter.string(from: lastEvent!.endDate)
+        let lastEndDateLocal_components = lastEndDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+        lastEndTime = lastEndDateLocal_components.prefix(2).joined(separator: ":")
+    }
+    
+    
+    if menuBarTextType == 0 || (menuBarTextType == 2 && lastEvent == nil){ // "11:15"
+        return startTime
+    } else if menuBarTextType == 1 { // "11:15 - 12:30"
+        return "\(startTime)-\(endTime)"
+    } else if menuBarTextType == 2 { // "- 10:30 11:15 -"
+        return "-\(lastEndTime) \(startTime)-"
+    }
+    
+    return ""
 }
 
 
 func getActionText(num: Int) -> String {
     var actionText: String
     
-    if nextEvents.count <= num {
+    if myEvents.count <= num {
         actionText = ""
     } else {
-        actionText = eventToActionText(event: nextEvents[num])
+        actionText = eventToActionText(event: myEvents[num])
     }
     
     return actionText
 }
 
 func eventToActionText(event: Event) -> String {
-    
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let localDateString = dateFormatter.string(from: event.startDate)
     
-    let components = localDateString.components(separatedBy: " ")[1].split(separator: ":")
-    let startTime = components.prefix(2).joined(separator: ":")
+    let startDateLocal = dateFormatter.string(from: event.startDate)
+    let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+    let startTime = startDateLocal_components.prefix(2).joined(separator: ":")
     
-    let actionText = "\(startTime) \(event.title) \(event.location)"
+    let endDateLocal = dateFormatter.string(from: event.endDate)
+    let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+    let endTime = endDateLocal_components.prefix(2).joined(separator: ":")
+    
+    let actionText = "\(startTime)-\(endTime) \(event.title) \(event.location)"
     
     return actionText
+}
+
+func getUTCnow() -> Date {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    dateFormatter.timeZone = TimeZone(identifier: "UTC")
+    let nowUTC = Date()
+    return nowUTC
 }
