@@ -213,11 +213,11 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
     
     let startDateLocal = dateFormatter.string(from: nextEvent!.startDate)
     let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-    let startTime = startDateLocal_components.prefix(2).joined(separator: ":")
+    let nextStartTime = startDateLocal_components.prefix(2).joined(separator: ":")
     
     let endDateLocal = dateFormatter.string(from: nextEvent!.endDate)
     let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-    let endTime = endDateLocal_components.prefix(2).joined(separator: ":")
+    let nextEndTime = endDateLocal_components.prefix(2).joined(separator: ":")
     
     var lastEndTime = ""
     if lastEvent != nil {
@@ -227,15 +227,21 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
     }
     
     
-    if menuBarTextType == 0 || (menuBarTextType == 2 && lastEvent == nil){ // "11:15"
-        return startTime
+    if menuBarTextType == 0{ // "11:15"
+        return nextStartTime
     } else if menuBarTextType == 1 { // "11:15 - 12:30"
-        return "\(startTime)-\(endTime)"
+        return "\(nextStartTime)-\(nextEndTime)"
     } else if menuBarTextType == 2 { // "- 10:30 11:15 -"
-        return "-\(lastEndTime) \(startTime)-"
+        if(nextEvent != nil && lastEvent != nil) {
+            return "-\(lastEndTime) \(nextStartTime)-"  // "- 10:30 11:15 -"
+        } else if (nextEvent != nil) {
+            return "\(nextStartTime)-"  // "11:15 -"
+        } else if (lastEvent != nil) {
+            return "-\(lastEndTime)"  // "- 10:30"
+        }
     }
     
-    return ""
+    return "?"
 }
 
 
