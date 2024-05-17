@@ -71,7 +71,7 @@ struct AppMenu: View {
                 Button(action: action1, label: { Text(getActionText(num: index)) })
                 
                 // ToDo: Divider() zwischen den Events von heute und morgen
-                if(true) { //! lastEvent && lastEvent.date != thisEvent.date
+                if(true) { //! lastEvent && dateOnly(lastEvent.startDate) != dateOnly(thisEvent.startDate)
                     Divider()
                 }
                 
@@ -95,6 +95,20 @@ struct AppMenu: View {
         Button(action: quit, label: { Text("Quit") })
     }
 }
+
+func dateOnly(date: Date) -> String { // entfernt die uhrzeit
+    if date == nil {
+        return ""
+    }
+
+    let dateFormatter = DateFormatter()
+    dateFormatter.timeZone = TimeZone.current
+    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+    let dateLocal = dateFormatter.string(from: date)
+    
+    return dateLocal.components(separatedBy: " ")[0]
+}
+
 
 func getNextEvents() -> [Event] {
     let eventStore = EKEventStore()
