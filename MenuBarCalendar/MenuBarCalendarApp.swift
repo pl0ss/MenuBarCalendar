@@ -10,6 +10,31 @@ import EventKit
 import Foundation
 
 
+// ToDo: Alle 5min neuladen
+
+// ToDo: Settings:
+    // Link zu GitHub
+    // Eigene Text festlegen zB “:)” [On / Off]
+
+    // Calendar mode [On / Off]
+    // * Aktualisierungsintervall [1 / 5 / 15 / 60] min
+    // * menuBarTextType mit Erkläerung [0, 1, 2]
+    // * Su- und Prefix
+    // * Text, wenn Kalender leer ist
+
+
+    // API mode [On / Off]
+    // * Request interval [1 / 5 / 15 / 60] min
+    // * Erwartet
+    //    * Text: String
+    //    * ShortText: String
+    //    * sendNotifikation: bool
+    // * ShortText in der MenuBar angezeigt [vor / nach Datum]
+    //     * Su - und Prefix
+    // * Langer Text angezeigen, wenn MenuBar anklicken [vor / nach Datum]
+
+
+
 //* Setting
 private let menuBarTextType = 2 // 0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"
 
@@ -37,13 +62,6 @@ class Event {
 
 private var myEvents = getNextEvents()
 
-
-// ToDo: Alle 5min neuladen
-
-// ToDo: Settings:
-    // menuBarTextType
-    // Link zu GitHub
-    // Aktualisierungsintervall wählen: 1min 5min 15min
 
 @main
 struct CustomApp: App {
