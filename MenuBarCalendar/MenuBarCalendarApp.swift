@@ -28,7 +28,7 @@ import Foundation
     // * Erwartet
     //    * Text: String
     //    * ShortText: String
-    //    * sendNotifikation: bool
+    //    * sendNotification: bool
     // * ShortText in der MenuBar angezeigt [vor / nach Datum]
     //     * Su - und Prefix
     // * Langer Text angezeigen, wenn MenuBar anklicken [vor / nach Datum]
