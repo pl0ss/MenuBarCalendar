@@ -102,7 +102,7 @@ struct AppMenu: View {
     
     
     var body: some View {
-        Button(action: action1, label: { Text("Termin der nächsten 24h") })
+        Button(action: action1, label: { Text("Termine der nächsten 24h") })
         Divider()
         
         getBodyEventElements()
