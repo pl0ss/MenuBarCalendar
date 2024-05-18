@@ -77,6 +77,7 @@ struct AppMenu: View {
     
     func getBodyEventElements() -> some View {
         // ToDo Buttons zu Text
+            // oder Buttons lassen, so haben die nämlich einen schönen Hover effect
         
         return VStack {
             
