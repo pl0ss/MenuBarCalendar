@@ -14,6 +14,7 @@ import Combine
 // ToDo: Alle 5min neuladen
 
 // ToDo: Settings:
+    // Refreshbutton
     // Link zu GitHub
     // Eigene Text festlegen zB “:)” [On / Off]
 
@@ -22,6 +23,9 @@ import Combine
     // * menuBarTextType mit Erkläerung [0, 1, 2]
     // * Su- und Prefix
     // * Text, wenn Kalender leer ist
+    // * Toggle, ob man die Color Dots haben will
+    // * locationReplace festlegen und togglen können
+    
 
 
     // API mode [On / Off]
@@ -37,7 +41,11 @@ import Combine
 
 
 //* Setting
-private let menuBarTextType = 2 // 0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"
+private var menuBarTextType = 2 // [0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"]
+private var refreshInterval = 300 // in sec
+private var showColorDots = 1; // [0: neineDots, 1: kleineDots: ⦁, 2: große Dots: ●]
+private var locationReplace = [",Technische Hochschule Ingolstadt"]
+
 
 
 class Event {
@@ -45,15 +53,17 @@ class Event {
     var startDate: Date
     var endDate: Date
     var location: String
+    var color: NSColor
     var differenct_date: Bool // für die Unterteilung zischen verschiedenen Tagen
     var most_important_event: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
     
-    init(title: String, startDate: Date, endDate: Date, location: String, differenct_date: Bool, most_important_event: Bool, multiple_days_info: String) {
+    init(title: String, startDate: Date, endDate: Date, location: String, color: NSColor, differenct_date: Bool, most_important_event: Bool, multiple_days_info: String) {
         self.title = title
         self.startDate = startDate
         self.endDate = endDate
         self.location = location
+        self.color = color
         self.differenct_date = differenct_date
         self.most_important_event = most_important_event
         self.multiple_days_info = multiple_days_info
@@ -75,26 +85,46 @@ struct CustomApp: App {
         // Text in MenuBar
 
         MenuBarExtra(getMenuBarText(events: eventManager.events)) {
-            AppMenu(events: eventManager.events)
+            AppMenu(eventManager: eventManager, events: eventManager.events)
+                // "eventManager: eventManager" ist für "eventManager.refresh()" in "struct AppMenu"
         }
     }
 }
 
 struct AppMenu: View {
+    @ObservedObject var eventManager: EventManager
+    
     var events: [Event]
     
-    func action1() {}
+    func action1() {
+        refresh()
+    }
+    
     func quit() {
         exit(0)
     }
     
-    func settings_open() {}
+    func refresh() {
+        eventManager.refresh()
+    }
+    
+    func settings_open() {
+        
+    }
+    
     
     func getBodyEventElements() -> some View {
     // ToDo Buttons zu Text
-        // oder Buttons lassen, so haben die nämlich einen schönen Hover effect
+        //* oder Buttons lassen, so haben die nämlich einen schönen Hover effect
         
-        VStack { // Auflistung der Termine
+        var dotShow: String = ""
+        if showColorDots == 1 {
+            dotShow = "⦁ " // <- Der ist größer als dieser "•"
+        } else if showColorDots == 2 {
+            dotShow = "● "
+        }
+        
+        return VStack { // Auflistung der Termine
             ForEach(events.indices, id: \.self) { index in
                 if(index == 0) {
                     // meistens "Heute"
@@ -110,9 +140,17 @@ struct AppMenu: View {
                 
                 // Einzenler Termin
                 if events[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
-                    Button(action: action1, label: { Text(eventToActionText(event: events[index])).underline() })
+                    if (showColorDots == 0) {
+                        Button(action: action1, label: { Text(eventToActionText(event: events[index])).underline() })
+                    } else {
+                        Button(action: action1, label: { Text(dotShow).foregroundColor(Color(events[index].color)) + Text(eventToActionText(event: events[index])).underline() })
+                    }
                 } else {
-                    Button(action: action1, label: { Text(eventToActionText(event: events[index])) })
+                    if showColorDots == 0{
+                        Button(action: action1, label: { Text(eventToActionText(event: events[index])) })
+                    } else {
+                        Button(action: action1, label: { Text(dotShow).foregroundColor(Color(events[index].color)) + Text(eventToActionText(event: events[index])) })
+                    }
                 }
                 
                 if(events[index].multiple_days_info != "") {
@@ -134,6 +172,7 @@ struct AppMenu: View {
             Divider()
             getBodyEventElements()
             Divider()
+            Button(action: refresh, label: { Text("Refresh") })
             Button(action: settings_open, label: { Text("Settings") })
             Button(action: quit, label: { Text("Quit") })
         }
@@ -150,7 +189,7 @@ class EventManager: ObservableObject {
     private let eventStore = EKEventStore()
     private let updateInterval: TimeInterval
     
-    init(updateInterval: TimeInterval = 300) { // Default is 5 minutes (300 seconds)
+    init(updateInterval: TimeInterval = TimeInterval(refreshInterval)) { // Default is 5 minutes (300 seconds)
         self.updateInterval = updateInterval
         requestAccess()
         startTimer()
@@ -194,7 +233,10 @@ class EventManager: ObservableObject {
                 
                 let title = thisEvent.title.trimmingCharacters(in: .whitespacesAndNewlines)
                 
-                let location = thisEvent.location ?? ""
+                var location = thisEvent.location ?? ""
+                for str in locationReplace {
+                    location = location.replacingOccurrences(of: str, with: "")
+                }
                 
                 var differenct_date = false // für die Unterteilung zischen verschiedenen Tagen
                 if (lastEvent != nil) && date_to_date_string(date: lastEvent!.startDate) != date_to_date_string(date: thisEvent.startDate) {
@@ -212,7 +254,7 @@ class EventManager: ObservableObject {
                 let dateStringStart = date_to_datumName(date: thisEvent.startDate)
                 let dateStringEnd = date_to_datumName(date: thisEvent.endDate)
                 if dateStringStart != dateStringEnd {
-                    multiple_days_info = " • \(dateStringStart) - \(dateStringEnd)"
+                    multiple_days_info = "   \(dateStringStart) - \(dateStringEnd)"
                 }
                 
                 lastEvent = thisEvent
@@ -223,12 +265,17 @@ class EventManager: ObservableObject {
                     startDate: thisEvent.startDate,
                     endDate: thisEvent.endDate,
                     location: location,
+                    color: thisEvent.calendar.color,
                     differenct_date: differenct_date,
                     most_important_event: most_important_event,
                     multiple_days_info: multiple_days_info
                 )
             }
         }
+    }
+    
+    func refresh() {
+        fetchEvents()
     }
 }
 
