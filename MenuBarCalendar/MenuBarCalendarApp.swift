@@ -8,6 +8,7 @@
 import SwiftUI
 import EventKit
 import Foundation
+import Combine
 
 
 // ToDo: Alle 5min neuladen
@@ -60,13 +61,14 @@ class Event {
 }
 
 
-private var myEvents = getNextEvents()
+// private var myEvents = getNextEvents()
 
 
 @main
 struct CustomApp: App {
+    @StateObject private var eventManager = EventManager()
+    
     var body: some Scene {
-        
         // Icon in MenuBar
         // MenuBarExtra("UtilityApp", systemImage: "hammer") {
             // AppMenu()
@@ -74,75 +76,167 @@ struct CustomApp: App {
         
         
         // Text in MenuBar
-        MenuBarExtra(getMenuBarText()) {
-            AppMenu()
+
+        MenuBarExtra(getMenuBarText(events: eventManager.events)) {
+            AppMenu(events: eventManager.events)
         }
     }
 }
 
 struct AppMenu: View {
+    var events: [Event]
+    
     func action1() {}
-    // func action2() {}
-    // func action3() {}
     func quit() {
         exit(0)
     }
     
-    func settings_open() {
-
-    }
-    
+    func settings_open() {}
     
     func getBodyEventElements() -> some View {
-        // ToDo Buttons zu Text
-            // oder Buttons lassen, so haben die nämlich einen schönen Hover effect
+    // ToDo Buttons zu Text
+        // oder Buttons lassen, so haben die nämlich einen schönen Hover effect
         
-        return VStack {
-            
-            ForEach(myEvents.indices, id: \.self) { index in
+        VStack { // Auflistung der Termine
+            ForEach(events.indices, id: \.self) { index in
                 if(index == 0) {
                     // meistens "Heute"
-                    Button(action: action1, label: { Text(date_to_datumName_long(date: myEvents[0].startDate)).font(.system(size: 14, weight: .bold)) })
+                    Button(action: action1, label: { Text(date_to_datumName_long(date: events[0].startDate)).font(.system(size: 14, weight: .bold)) })
                 }
                 
                 // für die Unterteilung zischen verschiedenen Tagen
-                if(myEvents[index].differenct_date) {
+                if(events[index].differenct_date) {
                     // meistens "Morgen"
                     Divider()
-                    Button(action: action1, label: { Text(date_to_datumName_long(date: myEvents[index].startDate)).font(.system(size: 14, weight: .bold)) })
+                    Button(action: action1, label: { Text(date_to_datumName_long(date: events[index].startDate)).font(.system(size: 14, weight: .bold)) })
                 }
                 
-                if myEvents[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
-                    Button(action: action1, label: { Text(getActionText(num: index)).underline() })
+                // Einzenler Termin
+                if events[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
+                    Button(action: action1, label: { Text(eventToActionText(event: events[index])).underline() })
                 } else {
-                    Button(action: action1, label: { Text(getActionText(num: index)) })
+                    Button(action: action1, label: { Text(eventToActionText(event: events[index])) })
                 }
                 
-                if(myEvents[index].multiple_days_info != "") {
-                    Text(myEvents[index].multiple_days_info)
+                if(events[index].multiple_days_info != "") {
+                    Text(events[index].multiple_days_info)
                 }
 
             }
 
-            // Button(action: action1, label: { Text(getActionText(num: 0)) })
-            // Button(action: action1, label: { Text(getActionText(num: 1)) })
-            // Button(action: action1, label: { Text(getActionText(num: 2)) })
+            // Button(action: action1, label: { Text(eventToActionText(num: 0)) })
+            // Button(action: action1, label: { Text(eventToActionText(num: 1)) })
+            // Button(action: action1, label: { Text(eventToActionText(num: 2)) })
         }
     }
-    
+
     
     var body: some View {
-        Button(action: action1, label: { Text("Termine der nächsten 24h") })
-        Divider()
-        
-        getBodyEventElements()
-
-        Divider()
-        Button(action: settings_open, label: { Text("Settings") })
-        Button(action: quit, label: { Text("Quit") })
+        VStack {
+            Button(action: action1, label: { Text("Termine der nächsten 24h") })
+            Divider()
+            getBodyEventElements()
+            Divider()
+            Button(action: settings_open, label: { Text("Settings") })
+            Button(action: quit, label: { Text("Quit") })
+        }
     }
 }
 
+
+
+// GPT
+class EventManager: ObservableObject {
+    @Published var events: [Event] = []
+    
+    private var timer: Timer?
+    private let eventStore = EKEventStore()
+    private let updateInterval: TimeInterval
+    
+    init(updateInterval: TimeInterval = 300) { // Default is 5 minutes (300 seconds)
+        self.updateInterval = updateInterval
+        requestAccess()
+        startTimer()
+        fetchEvents()
+    }
+    
+    deinit {
+        timer?.invalidate()
+    }
+    
+    func requestAccess() {
+        eventStore.requestFullAccessToEvents { (granted, error) in
+            if granted {
+                print("Zugriff auf Kalender genehmigt")
+                self.fetchEvents()
+            } else {
+                print("Zugriff auf Kalender abgelehnt oder Fehler aufgetreten: \(error?.localizedDescription ?? "Unbekannter Fehler")")
+            }
+        }
+    }
+    
+    func startTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: updateInterval, repeats: true) { _ in
+            self.fetchEvents()
+        }
+    }
+    
+    func fetchEvents() {
+        let nowUTC = Date()
+        let end = Calendar.current.date(byAdding: .day, value: 1, to: nowUTC)!
+        
+        let predicate = eventStore.predicateForEvents(withStart: nowUTC, end: end, calendars: nil)
+        let ekEvents = eventStore.events(matching: predicate)
+        
+        var lastEvent: EKEvent? = nil
+        let now = date_getNow()
+        var most_important_event_set = false
+        
+        DispatchQueue.main.async {
+            self.events = ekEvents.map { thisEvent in
+                
+                let title = thisEvent.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                let location = thisEvent.location ?? ""
+                
+                var differenct_date = false // für die Unterteilung zischen verschiedenen Tagen
+                if (lastEvent != nil) && date_to_date_string(date: lastEvent!.startDate) != date_to_date_string(date: thisEvent.startDate) {
+                    differenct_date = true
+                }
+                
+                var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
+                let now = date_getNow()
+                if date_to_local(date: thisEvent.startDate) > now && !most_important_event_set {
+                    most_important_event = true
+                    most_important_event_set = true
+                }
+                
+                var multiple_days_info = ""
+                let dateStringStart = date_to_datumName(date: thisEvent.startDate)
+                let dateStringEnd = date_to_datumName(date: thisEvent.endDate)
+                if dateStringStart != dateStringEnd {
+                    multiple_days_info = " • \(dateStringStart) - \(dateStringEnd)"
+                }
+                
+                lastEvent = thisEvent
+
+                
+                return Event(
+                    title: title,
+                    startDate: thisEvent.startDate,
+                    endDate: thisEvent.endDate,
+                    location: location,
+                    differenct_date: differenct_date,
+                    most_important_event: most_important_event,
+                    multiple_days_info: multiple_days_info
+                )
+            }
+        }
+    }
+}
+
+
+//* unused
 func getNextEvents() -> [Event] {
     let eventStore = EKEventStore()
     
@@ -232,7 +326,7 @@ func getNextEvents() -> [Event] {
 }
 
 
-func getMenuBarText() -> String {
+func getMenuBarText(events: [Event]) -> String {
     // Sucht den ersten Termin, welcher in der Zukunft beginnt
         // und gibt diesen als "menuBarText" zurück
     
@@ -240,12 +334,12 @@ func getMenuBarText() -> String {
     var lastEvent: Event? = nil
     
     let now = date_getNow()
-    for i in 0..<myEvents.count {
-        if date_to_local(date: myEvents[i].startDate) > now {
-            nextEvent = myEvents[i]
+    for i in 0..<events.count {
+        if date_to_local(date: events[i].startDate) > now {
+            nextEvent = events[i]
             
             if(i > 0) {
-                lastEvent = myEvents[i - 1]
+                lastEvent = events[i - 1]
             }
             break
         }
@@ -305,19 +399,6 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
     }
     
     return "?"
-}
-
-
-func getActionText(num: Int) -> String {
-    var actionText: String
-    
-    if myEvents.count <= num {
-        actionText = ""
-    } else {
-        actionText = eventToActionText(event: myEvents[num])
-    }
-    
-    return actionText
 }
 
 func eventToActionText(event: Event) -> String {
