@@ -11,8 +11,6 @@ import Foundation
 import Combine
 
 
-// ToDo: Alle 5min neuladen
-
 // ToDo: Settings:
     // Refreshbutton
     // Link zu GitHub
@@ -27,16 +25,16 @@ import Combine
     // * locationReplace festlegen und togglen können
     
 
-
     // API mode [On / Off]
     // * Request interval [1 / 5 / 15 / 60] min
     // * Erwartet
     //    * Text: String
     //    * ShortText: String
     //    * sendNotification: bool
-    // * ShortText in der MenuBar angezeigt [vor / nach Datum]
-    //     * Su - und Prefix
-    // * Langer Text angezeigen, wenn MenuBar anklicken [vor / nach Datum]
+    //      * ShortText in der MenuBar angezeigt [vor / nach Datum]
+    //      * Langer Text angezeigen, wenn MenuBar anklicken [vor / nach Datum]
+    // * Su - und Prefix
+
 
 
 
