@@ -61,9 +61,6 @@ class Event {
 }
 
 
-// private var myEvents = getNextEvents()
-
-
 @main
 struct CustomApp: App {
     @StateObject private var eventManager = EventManager()
@@ -236,96 +233,6 @@ class EventManager: ObservableObject {
 }
 
 
-//* unused
-func getNextEvents() -> [Event] {
-    let eventStore = EKEventStore()
-    
-    eventStore.requestFullAccessToEvents { (granted, error) in
-        if granted {
-            print("Zugriff auf Kalender genehmigt")
-        } else {
-            print("Zugriff auf Kalender abgelehnt oder Fehler aufgetreten: \(error?.localizedDescription ?? "Unbekannter Fehler")")
-        }
-    }
-    
-    
-    let calendar = Calendar.current
-    
-    // Startdatum festlegen
-    var date1components = DateComponents()
-    date1components.day = -1
-    let date1 = calendar.date(byAdding: date1components, to: Date(), wrappingComponents: false)
-    
-    // Enddatum festlegen
-    var date2components = DateComponents()
-    date2components.day = +1
-    let date2 = calendar.date(byAdding: date2components, to: Date(), wrappingComponents: false)
-    
-    // Predicate erstellen
-    var predicate: NSPredicate? = nil
-    if let anAgo = date1, let aNow = date2 {
-        predicate = eventStore.predicateForEvents(withStart: anAgo, end: aNow, calendars: nil)
-    }
-    
-    // Events abrufen
-    var events: [EKEvent]? = nil
-    if let aPredicate = predicate {
-        events = eventStore.events(matching: aPredicate)
-    }
-    
-    var nextEvents: [Event] = []
-    var lastEvent: Event? = nil
-    let now = date_getNow()
-    var most_important_event_set = false
-    
-    // Events ausgeben
-    if let events = events {
-        for event in events {
-            // print(event)
-            // print("Title: \(event.title)")
-            // print("Start Date: \(event.startDate)")
-            // print("End Date: \(event.endDate)")
-            // print("")
-            
-            if(date_to_local(date: event.endDate) > now) {
-                // return event.title
-                
-                var differenct_date = false // für die Unterteilung zischen verschiedenen Tagen
-                if lastEvent != nil {
-                    if (lastEvent != nil) && date_to_date_string(date: lastEvent!.startDate) != date_to_date_string(date: event.startDate) {
-                        differenct_date = true
-                    }
-                }
-                
-                var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
-                let now = date_getNow()
-                if date_to_local(date: event.startDate) > now && !most_important_event_set {
-                    most_important_event = true
-                    most_important_event_set = true
-                }
-                
-                var multiple_days_info = ""
-                let dateStringStart = date_to_datumName(date: event.startDate)
-                let dateStringEnd = date_to_datumName(date: event.endDate)
-                if dateStringStart != dateStringEnd {
-                    multiple_days_info = " • \(dateStringStart) - \(dateStringEnd)"
-                }
-                
-                
-                let thisEvent = Event(title: event.title, startDate: event.startDate, endDate: event.endDate, location: event.location ?? "", differenct_date:  differenct_date, most_important_event: most_important_event, multiple_days_info: multiple_days_info)
-                
-                nextEvents.append(thisEvent)
-                lastEvent = thisEvent
-            }
-        }
-    } else {
-        print("Keine Events gefunden")
-    }
-    
-    return nextEvents;
-}
-
-
 func getMenuBarText(events: [Event]) -> String {
     // Sucht den ersten Termin, welcher in der Zukunft beginnt
         // und gibt diesen als "menuBarText" zurück
@@ -344,7 +251,7 @@ func getMenuBarText(events: [Event]) -> String {
             break
         }
     }
-    
+
     
     var menuBarText: String
     
