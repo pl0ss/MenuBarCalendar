@@ -36,6 +36,7 @@ import Combine
     // * Su - und Prefix
 
 
+// ToDo: in info.plist Application is agent auf YES stellen
 
 
 //* Setting
@@ -124,13 +125,13 @@ struct AppMenu: View {
         
         return VStack { // Auflistung der Termine
             ForEach(events.indices, id: \.self) { index in
-                if(index == 0) {
+                if index == 0 {
                     // meistens "Heute"
                     Button(action: action1, label: { Text(date_to_datumName_long(date: events[0].startDate)).font(.system(size: 14, weight: .bold)) })
                 }
                 
                 // für die Unterteilung zischen verschiedenen Tagen
-                if(events[index].differenct_date) {
+                if events[index].differenct_date {
                     // meistens "Morgen"
                     Divider()
                     Button(action: action1, label: { Text(date_to_datumName_long(date: events[index].startDate)).font(.system(size: 14, weight: .bold)) })
@@ -138,20 +139,20 @@ struct AppMenu: View {
                 
                 // Einzenler Termin
                 if events[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
-                    if (showColorDots == 0) {
+                    if showColorDots == 0 {
                         Button(action: action1, label: { Text(eventToActionText(event: events[index])).underline() })
                     } else {
                         Button(action: action1, label: { Text(dotShow).foregroundColor(Color(events[index].color)) + Text(eventToActionText(event: events[index])).underline() })
                     }
                 } else {
-                    if showColorDots == 0{
+                    if showColorDots == 0 {
                         Button(action: action1, label: { Text(eventToActionText(event: events[index])) })
                     } else {
                         Button(action: action1, label: { Text(dotShow).foregroundColor(Color(events[index].color)) + Text(eventToActionText(event: events[index])) })
                     }
                 }
                 
-                if(events[index].multiple_days_info != "") {
+                if events[index].multiple_days_info != "" {
                     Text(events[index].multiple_days_info)
                 }
 
@@ -290,7 +291,7 @@ func getMenuBarText(events: [Event]) -> String {
         if date_to_local(date: events[i].startDate) > now {
             nextEvent = events[i]
             
-            if(i > 0) {
+            if i > 0 {
                 lastEvent = events[i - 1]
             }
             break
@@ -341,11 +342,11 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
     } else if menuBarTextType == 1 { // "11:15 - 12:30"
         return "\(nextStartTime)-\(nextEndTime)"
     } else if menuBarTextType == 2 { // "- 10:30 11:15 -"
-        if(nextEvent != nil && lastEvent != nil) {
+        if nextEvent != nil && lastEvent != nil {
             return "-\(lastEndTime) \(nextStartTime)-"  // "- 10:30 11:15 -"
-        } else if (nextEvent != nil) {
+        } else if nextEvent != nil {
             return "\(nextStartTime)-"  // "11:15 -"
-        } else if (lastEvent != nil) {
+        } else if lastEvent != nil {
             return "-\(lastEndTime)"  // "- 10:30"
         }
     }
