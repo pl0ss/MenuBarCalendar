@@ -12,9 +12,11 @@ import Combine
 
 
 // ToDo: Settings:
-    // Refreshbutton
+    // Versionsnummer
     // Link zu GitHub
     // Eigene Text festlegen zB “:)” [On / Off]
+    // Toggle um unnötiges auszublenden: "Termine der nächsten 24h", "Refresh", "Quit"
+        // Refreshbutton und Quit in den Einstellungen
 
     // Calendar mode [On / Off]
     // * Aktualisierungsintervall [1 / 5 / 15 / 60] min
@@ -37,10 +39,12 @@ import Combine
 
 
 // ToDo: in info.plist Application is agent auf YES stellen
+// ToDo: weitern Timer auf Beginnuhrzeit des Termins bzw der Enduhrzeit des aktuellen Termins stellen und dann View Refreshen und danach Timer erneut stellen
+// ToDo: Appnamen irgendwo in der View platzieren
 
 
 //* Setting
-private var menuBarTextType = 2 // [0: "11:15"; 1: "11:15 - 12:30"; 2: "- 10:30 11:15 -"]
+private var menuBarTextType = 3 // [0: "11:15", 1: "11:15 - 12:30", 2: "- 10:30 11:15 -", 3: "- 10:30 11:15 -"] 3 ist Kompaktere Version von 2
 private var refreshInterval = 300 // in sec
 private var showColorDots = 1; // [0: neineDots, 1: kleineDots: ⦁, 2: große Dots: ●]
 private var locationReplace = [",Technische Hochschule Ingolstadt"]
@@ -243,7 +247,6 @@ class EventManager: ObservableObject {
                 }
                 
                 var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
-                let now = date_getNow()
                 if date_to_local(date: thisEvent.startDate) > now && !most_important_event_set {
                     most_important_event = true
                     most_important_event_set = true
@@ -320,14 +323,13 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
     if nextEvent == nil {
         return ""
     }
-    
-    let startDateLocal = dateFormatter.string(from: nextEvent!.startDate)
-    let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-    let nextStartTime = startDateLocal_components.prefix(2).joined(separator: ":")
-    
-    let endDateLocal = dateFormatter.string(from: nextEvent!.endDate)
-    let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-    let nextEndTime = endDateLocal_components.prefix(2).joined(separator: ":")
+
+    var lastStartTime = ""
+    if lastEvent != nil {
+        let lastStartDateLocal = dateFormatter.string(from: lastEvent!.endDate)
+        let lastStartDateLocal_components = lastStartDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+        lastStartTime = lastStartDateLocal_components.prefix(2).joined(separator: ":")
+    }
     
     var lastEndTime = ""
     if lastEvent != nil {
@@ -336,18 +338,53 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
         lastEndTime = lastEndDateLocal_components.prefix(2).joined(separator: ":")
     }
     
+    var nextStartTime = ""
+    if nextEvent != nil {
+        let startDateLocal = dateFormatter.string(from: nextEvent!.startDate)
+        let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+        nextStartTime = startDateLocal_components.prefix(2).joined(separator: ":")
+    }
+    
+    var nextEndTime = ""
+    if nextEvent != nil {
+        let endDateLocal = dateFormatter.string(from: nextEvent!.endDate)
+        let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
+        nextEndTime = endDateLocal_components.prefix(2).joined(separator: ":")
+    }
+
+    
     
     if menuBarTextType == 0{ // "11:15"
         return nextStartTime
-    } else if menuBarTextType == 1 { // "11:15 - 12:30"
+    } else if menuBarTextType == 1 { // "11:15-12:30"
         return "\(nextStartTime)-\(nextEndTime)"
-    } else if menuBarTextType == 2 { // "- 10:30 11:15 -"
+    }
+    // "menuBarTextType == 2" zeigt relevante Infos zum nächsten Termin an, falls vorhanden, wenn nicht dann Infos zum aktuellen
+    else if menuBarTextType == 2 { // ["-10:30 11:15-", "11:15-12:30", "09:00-10:30"]
         if nextEvent != nil && lastEvent != nil {
-            return "-\(lastEndTime) \(nextStartTime)-"  // "- 10:30 11:15 -"
+            // in einem Termin und ein weiter Folgt
+            return "-\(lastEndTime) \(nextStartTime)-"  // "-10:30 11:15-"
         } else if nextEvent != nil {
-            return "\(nextStartTime)-"  // "11:15 -"
+            // in keinem Termin und ein Termin folgt
+            // return "\(nextStartTime)-"  // "11:15-"
+            return "\(nextStartTime)-\(nextEndTime)"  // "11:15-12:30"
         } else if lastEvent != nil {
-            return "-\(lastEndTime)"  // "- 10:30"
+            // in einem Termin und kein weiter Folgt
+            // return "-\(lastEndTime)"  // "-10:30"
+            return "\(lastStartTime)-\(lastEndTime)"  // "09:00-10:30"
+        }
+    }
+    // "menuBarTextType == 3" ist eine kompaktere Version von "menuBarTextType == 2"
+    else if menuBarTextType == 3 { // ["-10:30 11:15-", "11:15-", "-10:30"]
+        if nextEvent != nil && lastEvent != nil {
+            // in einem Termin und ein weiter Folgt
+            return "-\(lastEndTime) \(nextStartTime)-"  // "-10:30 11:15-"
+        } else if nextEvent != nil {
+            // in keinem Termin und ein Termin folgt
+            return "\(nextStartTime)-"  // "11:15-"
+        } else if lastEvent != nil {
+            // in einem Termin und kein weiter Folgt
+            return "-\(lastEndTime)"  // "-10:30"
         }
     }
     
