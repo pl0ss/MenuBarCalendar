@@ -469,10 +469,10 @@ func getTIMES_ele(events: [Event]) -> String {
         }
     }
     // "menuBarTextType == 3" ist eine kompaktere Version von "menuBarTextType == 2"
-    else if menuBarTextType == 3 { // ["-10:30", "11:15-", "-10:30"]
+    else if menuBarTextType == 3 { // ["11:15-", "11:15-", "-10:30"]
         if nextEvent != nil && currentEvent != nil {
-            // in einem Termin und ein weiter Folgt // "-10:30"
-            return_string = "-$END"
+            // in einem Termin und ein weiter Folgt // "11:15-"
+            return_string = "$NEXTSTART-"
         } else if nextEvent != nil {
             // in keinem Termin und ein Termin folgt // "11:15-"
             return_string = "$NEXTSTART-"
