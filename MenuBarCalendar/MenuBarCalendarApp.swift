@@ -142,7 +142,7 @@ struct AppMenu: View {
     }
     
     
-    func getBodyEventElements() -> some View {
+    func getViewEventList() -> some View {
     // ToDo Buttons zu Text
         //* oder Buttons lassen, so haben die nämlich einen schönen Hover effect
 
@@ -173,10 +173,28 @@ struct AppMenu: View {
                 }
 
             }
+        }
 
-            // Button(action: action1, label: { Text(getEVENT_ele(num: 0)) })
-            // Button(action: action1, label: { Text(getEVENT_ele(num: 1)) })
-            // Button(action: action1, label: { Text(getEVENT_ele(num: 2)) })
+    }
+
+    func getViewEventListTexts() -> some View {
+        let lines = getEventList_texts().enumerated().map { index, line in
+            (index, line.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+            // sodass ich einen index für die id bekomme
+                // den jedes element darf nur einmal vorkommen, da es sonst einen Warnung in xcode gibt
+        
+        return VStack {
+            ForEach(lines, id: \.0) { index, line in
+
+                if(line == "$DIVIDER") {
+                    Divider().id(index)
+                } else if(line == "$EMPTYLINE") {
+                    Button(action: action1, label: { Text("") }).id(index)
+                } else if(line != "") {
+                    Button(action: action1, label: { Text(line) }).id(index)
+                }
+            }
         }
     }
 
@@ -184,15 +202,49 @@ struct AppMenu: View {
     var body: some View {
         VStack {
             Button(action: action1, label: { Text("MenuBarCalendar").font(.system(size: 14, weight: .bold)) })
-            Button(action: action1, label: { Text("Termine der nächsten 24h") })
-            Divider()
-            getBodyEventElements()
+
+            getViewEventListTexts()
+
+            getViewEventList()
+
             Divider()
             Button(action: refresh, label: { Text("Refresh") })
             Button(action: settings_open, label: { Text("Settings") })
             Button(action: quit, label: { Text("Quit") })
         }
     }
+}
+
+func getEventList_texts() -> [String] {
+    var return_string = ""
+    
+    //* return_string = "$DEFAULT" // Default
+    //* return_string = "$DIVIDER$IMPORTANT$DIVIDER$APISHORT$LINEBREAK$APILONG" // zeige API Text
+    // return_string = "$DIVIDERHi$EMPTYLINE$EMPTYLINE$LINEBREAK$DEFAULT$DIVIDER$APISHORT$LINEBREAK$APILONG" // einfach ein test
+
+    return_string += "$DIVIDER" // sodass immer mit eine div beendet wird
+
+    while return_string.contains("$DIVIDER$DIVIDER") {
+        return_string.replace("$DIVIDER$DIVIDER", with: "$DIVIDER")
+    }
+
+    //                    "$LINEBREAK"
+    return_string.replace("$DEFAULT", with: "Termine der nächsten 24h")
+    return_string.replace("$APISHORT", with: getAPISHORT_ele())
+    return_string.replace("$APILONG", with: getAPILONG_ele())
+    return_string.replace("$IMPORTANT", with: getIMPORTANT_ele()) //* $IMPORTANT umbennen?
+    return_string.replace("$DIVIDER", with: "$LINEBREAK$DIVIDER$LINEBREAK") // sodass $DIVIDER ein einzelnes element im array ist
+    return_string.replace("$EMPTYLINE", with: "$LINEBREAK$EMPTYLINE$LINEBREAK") 
+
+    var lines = return_string.components(separatedBy: "$LINEBREAK")
+    if lines.first == "" {
+        lines.removeFirst()
+    }
+    if lines.last == "" {
+        lines.removeLast()
+    }
+
+    return lines
 }
 
 //* Kaländer auslesen
@@ -306,16 +358,15 @@ class EventManager: ObservableObject {
 
 
 func getMenuBarText(events: [Event]) -> String {
-    var menuBarText = "$APISHORT$IMPORTANT$TIMES"
+    var return_string = "$APISHORT $IMPORTANT $TIMES"
 
     //* $IMPORTANT umbennen?
-    // Somit werden die funs nur aufgerufen diese gebraucht werden
-    menuBarText.replace("$APISHORT", with: getAPISHORT_ele())
-    menuBarText.replace("$APILONG", with: getAPILONG_ele())
-    menuBarText.replace("$IMPORTANT", with: getIMPORTANT_ele())
-    menuBarText.replace("$TIMES", with: getTIMES_ele(events: events))
+    return_string.replace("$APISHORT", with: getAPISHORT_ele())
+    return_string.replace("$APILONG", with: getAPILONG_ele())
+    return_string.replace("$IMPORTANT", with: getIMPORTANT_ele())
+    return_string.replace("$TIMES", with: getTIMES_ele(events: events))
     
-    return menuBarText
+    return return_string
 }
 
 func getTIMES_ele(events: [Event]) -> String {
@@ -444,13 +495,16 @@ func getTIMES_ele(events: [Event]) -> String {
 
 func getAPISHORT_ele() -> String {
     return ""
+    // return "API"
 }
 func getAPILONG_ele() -> String {
     return ""
+    // return "APILONG"
 }
 
 func getIMPORTANT_ele() -> String {
     return ""
+    // return "IMPORTANT"
 }
 
 
