@@ -27,6 +27,11 @@ import Combine
         // Text, wenn Kalender leer ist
         // Toggle, ob man die Color Dots haben will
         // locationReplace festlegen und togglen können
+
+        // Events ingonieren
+            // Sodass diese nicht in der MenuBar angezeigt werden (aber Trotzdem in der Event Liste)
+            // Option: Alle ganztägigen Termine oder welche die einen Bestimmten String behinhalten
+                // zB ["Geburtstag", "Birtday"]
     
     // API mode
         // [On / Off]
