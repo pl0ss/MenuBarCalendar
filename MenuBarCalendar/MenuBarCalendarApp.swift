@@ -21,7 +21,8 @@ import Combine
     // Calendar mode
         // [On / Off]
         // Aktualisierungsintervall [1 / 5 / 15 / 60] min
-        // menuBarTextType mit Erkläerung [0, 1, 2]
+        // menuBarTextType mit Erkläerung [0, 1, 2, 3]
+            // möglichkeit für eigenes Format
         // Su- und Prefix
         // Text, wenn Kalender leer ist
         // Toggle, ob man die Color Dots haben will
@@ -54,10 +55,16 @@ import Combine
 
 
 //* Setting
-private var menuBarTextType = 3 // [0: "11:15", 1: "11:15 - 12:30", 2: "- 10:30 11:15 -", 3: "- 10:30 11:15 -"] 3 ist Kompaktere Version von 2
+private var menuBarTextType = 3
+    // 0: "11:15"
+    // 1: "- 10:30 11:15 -"  // zeigt immer Zwei zeiten an
+    // 2: "- 10:30 11:15 -" // Zeigt nur Zwei zeiten an, wenn beide Zeiten in der Zukunft liegen (2 ist Kompaktere Version von 1)
+    // 3: "-10:30" // Zeigt nur eine Uhrzeit an (3 ist Kompaktere Version von 2)
 private var refreshInterval = 300 // in sec
 private var showColorDots = 1; // [0: neineDots, 1: kleineDots: ⦁, 2: große Dots: ●]
-private var locationReplace = [",Technische Hochschule Ingolstadt"]
+private var eventNameReplace = [["IB_", ""]]
+private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
+private var noEventString = ":)" // kein kein Termin in den nächsten 24h
 
 
 
@@ -82,6 +89,10 @@ class Event {
         self.multiple_days_info = multiple_days_info
     }
 }
+
+//* VIEWS
+// =======================================================================
+// =======================================================================
 
 
 @main
@@ -129,13 +140,7 @@ struct AppMenu: View {
     func getBodyEventElements() -> some View {
     // ToDo Buttons zu Text
         //* oder Buttons lassen, so haben die nämlich einen schönen Hover effect
-        
-        var dotShow: String = ""
-        if showColorDots == 1 {
-            dotShow = "⦁ " // <- Der ist größer als dieser "•"
-        } else if showColorDots == 2 {
-            dotShow = "● "
-        }
+
         
         return VStack { // Auflistung der Termine
             ForEach(events.indices, id: \.self) { index in
@@ -153,17 +158,9 @@ struct AppMenu: View {
                 
                 // Einzenler Termin
                 if events[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
-                    if showColorDots == 0 {
-                        Button(action: action1, label: { Text(eventToActionText(event: events[index])).underline() })
-                    } else {
-                        Button(action: action1, label: { Text(dotShow).foregroundColor(Color(events[index].color)) + Text(eventToActionText(event: events[index])).underline() })
-                    }
+                    Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index])).underline() })
                 } else {
-                    if showColorDots == 0 {
-                        Button(action: action1, label: { Text(eventToActionText(event: events[index])) })
-                    } else {
-                        Button(action: action1, label: { Text(dotShow).foregroundColor(Color(events[index].color)) + Text(eventToActionText(event: events[index])) })
-                    }
+                    Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index])) })
                 }
                 
                 if events[index].multiple_days_info != "" {
@@ -172,9 +169,9 @@ struct AppMenu: View {
 
             }
 
-            // Button(action: action1, label: { Text(eventToActionText(num: 0)) })
-            // Button(action: action1, label: { Text(eventToActionText(num: 1)) })
-            // Button(action: action1, label: { Text(eventToActionText(num: 2)) })
+            // Button(action: action1, label: { Text(getEVENT_ele(num: 0)) })
+            // Button(action: action1, label: { Text(getEVENT_ele(num: 1)) })
+            // Button(action: action1, label: { Text(getEVENT_ele(num: 2)) })
         }
     }
 
@@ -193,9 +190,11 @@ struct AppMenu: View {
     }
 }
 
+//* Kaländer auslesen
+// =======================================================================
+// =======================================================================
 
-
-// GPT
+//* von GPT
 class EventManager: ObservableObject {
     @Published var events: [Event] = []
     
@@ -245,11 +244,14 @@ class EventManager: ObservableObject {
         DispatchQueue.main.async {
             self.events = ekEvents.map { thisEvent in
                 
-                let title = thisEvent.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                var title = thisEvent.title.trimmingCharacters(in: .whitespacesAndNewlines)
+                for ele in eventNameReplace {
+                    title = title.replacingOccurrences(of: ele[0], with: ele[1])
+                }
                 
                 var location = thisEvent.location ?? ""
-                for str in locationReplace {
-                    location = location.replacingOccurrences(of: str, with: "")
+                for ele in eventLocationReplace {
+                    location = location.replacingOccurrences(of: ele[0], with: ele[1])
                 }
                 
                 var differenct_date = false // für die Unterteilung zischen verschiedenen Tagen
@@ -293,12 +295,30 @@ class EventManager: ObservableObject {
 }
 
 
+//* get Functions
+// =======================================================================
+// =======================================================================
+
+
 func getMenuBarText(events: [Event]) -> String {
+    var menuBarText = "$APISHORT$IMPORTANT$TIMES"
+
+    //* $IMPORTANT umbennen?
+    // Somit werden die funs nur aufgerufen diese gebraucht werden
+    menuBarText.replace("$APISHORT", with: getAPISHORT_ele())
+    menuBarText.replace("$APILONG", with: getAPILONG_ele())
+    menuBarText.replace("$IMPORTANT", with: getIMPORTANT_ele())
+    menuBarText.replace("$TIMES", with: getTIMES_ele(events: events))
+    
+    return menuBarText
+}
+
+func getTIMES_ele(events: [Event]) -> String {
     // Sucht den ersten Termin, welcher in der Zukunft beginnt
         // und gibt diesen als "menuBarText" zurück
     
+    var currentEvent: Event? = nil
     var nextEvent: Event? = nil
-    var lastEvent: Event? = nil
     
     let now = date_getNow()
     for i in 0..<events.count {
@@ -306,27 +326,14 @@ func getMenuBarText(events: [Event]) -> String {
             nextEvent = events[i]
             
             if i > 0 {
-                lastEvent = events[i - 1]
+                currentEvent = events[i - 1]
             }
             break
         }
     }
 
     
-    var menuBarText: String
     
-    if nextEvent != nil && lastEvent != nil {
-        menuBarText = eventToMenuBarText(nextEvent: nextEvent!, lastEvent: lastEvent!)
-    } else if nextEvent != nil {
-        menuBarText = eventToMenuBarText(nextEvent: nextEvent!)
-    } else {
-        menuBarText = "Keine Termine"
-    }
-    
-    return menuBarText
-}
-
-func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -335,93 +342,155 @@ func eventToMenuBarText(nextEvent: Event? = nil, lastEvent: Event? = nil) -> Str
         return ""
     }
 
-    var lastStartTime = ""
-    if lastEvent != nil {
-        let lastStartDateLocal = dateFormatter.string(from: lastEvent!.endDate)
+    var currentEventStartTime = ""
+    if currentEvent != nil {
+        let lastStartDateLocal = dateFormatter.string(from: currentEvent!.endDate)
         let lastStartDateLocal_components = lastStartDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-        lastStartTime = lastStartDateLocal_components.prefix(2).joined(separator: ":")
+        currentEventStartTime = lastStartDateLocal_components.prefix(2).joined(separator: ":")
     }
     
-    var lastEndTime = ""
-    if lastEvent != nil {
-        let lastEndDateLocal = dateFormatter.string(from: lastEvent!.endDate)
+    var currentEventEndTime = ""
+    if currentEvent != nil {
+        let lastEndDateLocal = dateFormatter.string(from: currentEvent!.endDate)
         let lastEndDateLocal_components = lastEndDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-        lastEndTime = lastEndDateLocal_components.prefix(2).joined(separator: ":")
+        currentEventEndTime = lastEndDateLocal_components.prefix(2).joined(separator: ":")
     }
     
-    var nextStartTime = ""
+    var nextEventStartTime = ""
     if nextEvent != nil {
         let startDateLocal = dateFormatter.string(from: nextEvent!.startDate)
         let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-        nextStartTime = startDateLocal_components.prefix(2).joined(separator: ":")
+        nextEventStartTime = startDateLocal_components.prefix(2).joined(separator: ":")
     }
     
-    var nextEndTime = ""
+    var nextEventEndTime = ""
     if nextEvent != nil {
         let endDateLocal = dateFormatter.string(from: nextEvent!.endDate)
         let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-        nextEndTime = endDateLocal_components.prefix(2).joined(separator: ":")
+        nextEventEndTime = endDateLocal_components.prefix(2).joined(separator: ":")
     }
-
+    
+    var return_string = "$EMPTY" // $START, $END, $NEXTSTART, $NEXTEND, $EMPTY (wenn kein Event mehr in den nächsten 24h)
     
     
-    if menuBarTextType == 0{ // "11:15"
-        return nextStartTime
-    } else if menuBarTextType == 1 { // "11:15-12:30"
-        return "\(nextStartTime)-\(nextEndTime)"
+    // Zeigt nur BeginnUhrzeit, falls ein Termin Vorhanden ist
+    if menuBarTextType == 0 {// ["11:15", "-"]
+       if nextEvent != nil && currentEvent != nil {
+           // in einem Termin und ein weiter Folgt // "11:15"
+           return_string = "$NEXTSTART"
+       } else if nextEvent != nil {
+           // in keinem Termin und ein Termin folgt
+           return_string = "$NEXTSTART" // "11:15"
+       } else if currentEvent != nil {
+           // in einem Termin und kein weiter Folgt // "-"
+           return_string = "$EMPTY"
+       }
     }
-    // "menuBarTextType == 2" zeigt relevante Infos zum nächsten Termin an, falls vorhanden, wenn nicht dann Infos zum aktuellen
-    else if menuBarTextType == 2 { // ["-10:30 11:15-", "11:15-12:30", "09:00-10:30"]
-        if nextEvent != nil && lastEvent != nil {
-            // in einem Termin und ein weiter Folgt
-            return "-\(lastEndTime) \(nextStartTime)-"  // "-10:30 11:15-"
+    // "menuBarTextType == 1" zeigt relevante Infos zum nächsten Termin an, falls vorhanden, wenn nicht dann Infos zum aktuellen
+    else if menuBarTextType == 1 { // ["-10:30 11:15-", "11:15-12:30", "09:00-10:30"]
+        if nextEvent != nil && currentEvent != nil {
+            // in einem Termin und ein weiter Folgt // "-10:30 11:15-"
+            return_string = "$END-$NEXTSTART"
         } else if nextEvent != nil {
-            // in keinem Termin und ein Termin folgt
-            // return "\(nextStartTime)-"  // "11:15-"
-            return "\(nextStartTime)-\(nextEndTime)"  // "11:15-12:30"
-        } else if lastEvent != nil {
-            // in einem Termin und kein weiter Folgt
-            // return "-\(lastEndTime)"  // "-10:30"
-            return "\(lastStartTime)-\(lastEndTime)"  // "09:00-10:30"
+            // in keinem Termin und ein Termin folgt // "11:15-12:30"
+            return_string = "$NEXTSTART-$NEXTEND"
+        } else if currentEvent != nil {
+            // in einem Termin und kein weiter Folgt // "-10:30"
+            return_string = "$START-$END"
+        }
+    }
+    // "menuBarTextType == 2" ist eine kompaktere Version von "menuBarTextType == 1"
+    else if menuBarTextType == 2 { // ["-10:30 11:15-", "11:15-", "-10:30"]
+        if nextEvent != nil && currentEvent != nil {
+            // in einem Termin und ein weiter Folgt // "-10:30 11:15-"
+            return_string = "$END-$NEXTSTART"
+        } else if nextEvent != nil {
+            // in keinem Termin und ein Termin folgt // "11:15-"
+            return_string = "$NEXTSTART-"
+        } else if currentEvent != nil {
+            // in einem Termin und kein weiter Folgt // "-10:30"
+            return_string = "-$END"
         }
     }
     // "menuBarTextType == 3" ist eine kompaktere Version von "menuBarTextType == 2"
-    else if menuBarTextType == 3 { // ["-10:30 11:15-", "11:15-", "-10:30"]
-        if nextEvent != nil && lastEvent != nil {
-            // in einem Termin und ein weiter Folgt
-            return "-\(lastEndTime) \(nextStartTime)-"  // "-10:30 11:15-"
+    else if menuBarTextType == 3 { // ["-10:30", "11:15-", "-10:30"]
+        if nextEvent != nil && currentEvent != nil {
+            // in einem Termin und ein weiter Folgt // "-10:30"
+            return_string = "-$END"
         } else if nextEvent != nil {
-            // in keinem Termin und ein Termin folgt
-            return "\(nextStartTime)-"  // "11:15-"
-        } else if lastEvent != nil {
-            // in einem Termin und kein weiter Folgt
-            return "-\(lastEndTime)"  // "-10:30"
+            // in keinem Termin und ein Termin folgt // "11:15-"
+            return_string = "$NEXTSTART-"
+        } else if currentEvent != nil {
+            // in einem Termin und kein weiter Folgt // "-10:30"
+            return_string = "-$END"
         }
     }
     
-    return "?"
+    return_string.replace("$EMPTY", with: noEventString)
+    return_string.replace("$START", with: currentEventStartTime)
+    return_string.replace("$END", with: currentEventEndTime)
+    return_string.replace("$NEXTSTART", with: nextEventStartTime)
+    return_string.replace("$NEXTEND", with: nextEventEndTime)
+    return_string.replace("$STARTNEXT", with: nextEventStartTime) // falls man sich "verschrieben" hat
+    return_string.replace("$ENDNEXT", with: nextEventEndTime) // falls man sich "verschrieben" hat
+    
+    return return_string
 }
 
-func eventToActionText(event: Event) -> String {
+func getAPISHORT_ele() -> String {
+    return ""
+}
+func getAPILONG_ele() -> String {
+    return ""
+}
+
+func getIMPORTANT_ele() -> String {
+    return ""
+}
+
+
+func getEVENT_ele(event: Event) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     
-    let startDateLocal = dateFormatter.string(from: event.startDate)
-    let startDateLocal_components = startDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-    let startTime = startDateLocal_components.prefix(2).joined(separator: ":")
+    let startDate = dateFormatter.string(from: event.startDate)
+    let startDate_components = startDate.components(separatedBy: " ")[1].split(separator: ":")
+    let eventStartTime = startDate_components.prefix(2).joined(separator: ":")
     
-    let endDateLocal = dateFormatter.string(from: event.endDate)
-    let endDateLocal_components = endDateLocal.components(separatedBy: " ")[1].split(separator: ":")
-    let endTime = endDateLocal_components.prefix(2).joined(separator: ":")
+    let endDate = dateFormatter.string(from: event.endDate)
+    let endDate_components = endDate.components(separatedBy: " ")[1].split(separator: ":")
+    let eventEndTime = endDate_components.prefix(2).joined(separator: ":")
     
-    let actionText = "\(startTime)-\(endTime) \(event.title) \(event.location)"
+    // let actionText = "\(eventStartTime)-\(eventEndTime) \(event.title) \(event.location)"
     
-    return actionText
+    var return_string = "$EVENTSTART-$EVENTEND $TITLE $LOCATION"
+
+    return_string.replace("$EVENTSTART", with: eventStartTime)
+    return_string.replace("$EVENTEND", with: eventEndTime)
+    return_string.replace("$TITLE", with: event.title)
+    return_string.replace("$LOCATION", with: event.location)
+    
+    return return_string
+}
+
+func getDOT_ele () -> String {
+    var return_string = ""
+
+    if showColorDots == 1 {
+        return_string = "$DOTSMALL " 
+    } else if showColorDots == 2 {
+        return_string = "$DOTLARGE "
+    }
+
+    return_string.replace("$DOTSMALL", with: "⦁") // <- Der ist größer als dieser "•"
+    return_string.replace("$DOTLARGE", with: "●")
+    
+    return return_string
 }
 
 
-//* Basics Date Functions
+//* MARKBasics Date Functions
 // =======================================================================
 // =======================================================================
 
