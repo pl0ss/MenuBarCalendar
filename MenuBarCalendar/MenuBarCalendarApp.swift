@@ -15,32 +15,42 @@ import Combine
     // Versionsnummer
     // Link zu GitHub
     // Eigene Text festlegen zB “:)” [On / Off]
-    // Toggle um unnötiges auszublenden: "Termine der nächsten 24h", "Refresh", "Quit"
+    // Toggle um unnötiges auszublenden: "MenuBarCalendar", "Termine der nächsten 24h", "Refresh", "Quit"
         // Refreshbutton und Quit in den Einstellungen
 
-    // Calendar mode [On / Off]
-    // * Aktualisierungsintervall [1 / 5 / 15 / 60] min
-    // * menuBarTextType mit Erkläerung [0, 1, 2]
-    // * Su- und Prefix
-    // * Text, wenn Kalender leer ist
-    // * Toggle, ob man die Color Dots haben will
-    // * locationReplace festlegen und togglen können
+    // Calendar mode
+        // [On / Off]
+        // Aktualisierungsintervall [1 / 5 / 15 / 60] min
+        // menuBarTextType mit Erkläerung [0, 1, 2]
+        // Su- und Prefix
+        // Text, wenn Kalender leer ist
+        // Toggle, ob man die Color Dots haben will
+        // locationReplace festlegen und togglen können
     
+    // API mode
+        // [On / Off]
+        // Request interval [1 / 5 / 15 / 60] min
+        // Erwartet
+            // Text: String
+            // ShortText: String
+            // sendNotification: bool
+            // ShortText in der MenuBar angezeigt [vor / nach Datum]
+                // Langer Text angezeigen, wenn MenuBar anklicken [vor / nach Datum]
+        // Su - und Prefix
 
-    // API mode [On / Off]
-    // * Request interval [1 / 5 / 15 / 60] min
-    // * Erwartet
-    //    * Text: String
-    //    * ShortText: String
-    //    * sendNotification: bool
-    //      * ShortText in der MenuBar angezeigt [vor / nach Datum]
-    //      * Langer Text angezeigen, wenn MenuBar anklicken [vor / nach Datum]
-    // * Su - und Prefix
+    // Tricker hinzufügen:
+        // wenn ein String auftaucht (SuchStrings als Array angeben) (und wo: Titel, Location),
+        // dann möglichkeit zum Ersetzen
+            // zB für [",Technische Hochschule Ingolstadt"]
+        // oder Emoji in MenuBar Platzieren
+            // zB wenn Titel ["Geburtstag", "Birtday"] enthalt
+            // dann zB "🎂" Emoji in MenuBar platzieren und bei dem Termin
+            // als "gelesen" markieren können, sodass dieser Emoji für heute nicht mehr angezeigt wird
 
 
 // ToDo: in info.plist Application is agent auf YES stellen
+    // falls deaktiviert (NO)
 // ToDo: weitern Timer auf Beginnuhrzeit des Termins bzw der Enduhrzeit des aktuellen Termins stellen und dann View Refreshen und danach Timer erneut stellen
-// ToDo: Appnamen irgendwo in der View platzieren
 
 
 //* Setting
@@ -171,6 +181,7 @@ struct AppMenu: View {
     
     var body: some View {
         VStack {
+            Button(action: action1, label: { Text("MenuBarCalendar").font(.system(size: 14, weight: .bold)) })
             Button(action: action1, label: { Text("Termine der nächsten 24h") })
             Divider()
             getBodyEventElements()
