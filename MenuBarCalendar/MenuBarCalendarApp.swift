@@ -45,6 +45,7 @@ import Combine
         // Su - und Prefix
 
     // Tricker hinzufügen:
+        // für bestimmten Kalender (calendarName) oder alle
         // wenn ein String auftaucht (SuchStrings als Array angeben) (und wo: Titel, Location),
         // dann möglichkeit zum Ersetzen
             // zB für [",Technische Hochschule Ingolstadt"]
@@ -79,16 +80,18 @@ class Event {
     var endDate: Date
     var location: String
     var color: NSColor
+    var calendarName: String
     var differenct_date: Bool // für die Unterteilung zischen verschiedenen Tagen
     var most_important_event: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
     
-    init(title: String, startDate: Date, endDate: Date, location: String, color: NSColor, differenct_date: Bool, most_important_event: Bool, multiple_days_info: String) {
+    init(title: String, startDate: Date, endDate: Date, location: String, color: NSColor, calendarName: String, differenct_date: Bool, most_important_event: Bool, multiple_days_info: String) {
         self.title = title
         self.startDate = startDate
         self.endDate = endDate
         self.location = location
         self.color = color
+        self.calendarName = calendarName
         self.differenct_date = differenct_date
         self.most_important_event = most_important_event
         self.multiple_days_info = multiple_days_info
@@ -342,6 +345,7 @@ class EventManager: ObservableObject {
                     endDate: thisEvent.endDate,
                     location: location,
                     color: thisEvent.calendar.color,
+                    calendarName: thisEvent.calendar.title,
                     differenct_date: differenct_date,
                     most_important_event: most_important_event,
                     multiple_days_info: multiple_days_info
@@ -542,6 +546,8 @@ func getEVENT_ele(event: Event) -> String {
     return_string.replace("$EVENTEND", with: eventEndTime)
     return_string.replace("$TITLE", with: event.title)
     return_string.replace("$LOCATION", with: event.location)
+    return_string.replace("$CALENDARNAME", with: event.calendarName)
+        return_string.replace("$CALNAME", with: event.calendarName)
     
     return return_string
 }
