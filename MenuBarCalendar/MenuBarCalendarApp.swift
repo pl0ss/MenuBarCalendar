@@ -70,7 +70,7 @@ private var showColorDots = 1; // [0: neineDots, 1: kleineDots: ⦁, 2: große D
 private var eventNameReplace = [["IB_", ""]]
 private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
 private var noEventString = ":)" // kein kein Termin in den nächsten 24h
-
+private var calendarDate: Date?; // Von wann die Kalenderdaten sind
 
 
 class Event {
@@ -220,7 +220,7 @@ func getEventList_texts() -> [String] {
     
     //* return_string = "$DEFAULT" // Default
     //* return_string = "$DIVIDER$IMPORTANT$DIVIDER$APISHORT$LINEBREAK$APILONG" // zeige API Text
-    // return_string = "$DIVIDERHi$EMPTYLINE$EMPTYLINE$LINEBREAK$DEFAULT$DIVIDER$APISHORT$LINEBREAK$APILONG" // einfach ein test
+    // return_string = "$DIVIDERStand: $CALENDARDATE Uhr$DIVIDERHi$EMPTYLINE$EMPTYLINE$LINEBREAK$DEFAULT$DIVIDER$APISHORT$LINEBREAK$APILONG" // einfach ein test
 
     return_string += "$DIVIDER" // sodass immer mit eine div beendet wird
 
@@ -232,6 +232,8 @@ func getEventList_texts() -> [String] {
     return_string.replace("$DEFAULT", with: "Termine der nächsten 24h")
     return_string.replace("$APISHORT", with: getAPISHORT_ele())
     return_string.replace("$APILONG", with: getAPILONG_ele())
+    return_string.replace("$APIDATE", with: getAPIDATE())
+    return_string.replace("$CALENDARDATE", with: getCALENDARDATE())
     return_string.replace("$IMPORTANT", with: getIMPORTANT_ele()) //* $IMPORTANT umbennen?
     return_string.replace("$DIVIDER", with: "$LINEBREAK$DIVIDER$LINEBREAK") // sodass $DIVIDER ein einzelnes element im array ist
     return_string.replace("$EMPTYLINE", with: "$LINEBREAK$EMPTYLINE$LINEBREAK") 
@@ -288,6 +290,8 @@ class EventManager: ObservableObject {
     }
     
     func fetchEvents() {
+        calendarDate = date_getNow()
+        
         let nowUTC = Date()
         let end = Calendar.current.date(byAdding: .day, value: 1, to: nowUTC)!
         
@@ -505,6 +509,15 @@ func getAPILONG_ele() -> String {
 func getIMPORTANT_ele() -> String {
     return ""
     // return "IMPORTANT"
+}
+
+func getAPIDATE() -> String {
+    let date = date_getNow() // ToDo
+    return date_to_time_string(date: date)
+}
+
+func getCALENDARDATE() -> String {
+    return date_to_time_string(date: calendarDate!)
 }
 
 
