@@ -61,7 +61,7 @@ import Combine
 
 
 //* Setting
-private var menuBarTextType = 3
+private var menuBarTextType = 2
     // 0: "11:15"
     // 1: "- 10:30 11:15 -"  // zeigt immer Zwei zeiten an
     // 2: "- 10:30 11:15 -" // Zeigt nur Zwei zeiten an, wenn beide Zeiten in der Zukunft liegen (2 ist Kompaktere Version von 1)
@@ -454,7 +454,7 @@ func getTIMES_ele(events: [Event]) -> String {
     else if menuBarTextType == 1 { // ["-10:30 11:15-", "11:15-12:30", "09:00-10:30"]
         if nextEvent != nil && currentEvent != nil {
             // in einem Termin und ein weiter Folgt // "-10:30 11:15-"
-            return_string = "$END-$NEXTSTART"
+            return_string = "-$END $NEXTSTART-"
         } else if nextEvent != nil {
             // in keinem Termin und ein Termin folgt // "11:15-12:30"
             return_string = "$NEXTSTART-$NEXTEND"
@@ -467,7 +467,7 @@ func getTIMES_ele(events: [Event]) -> String {
     else if menuBarTextType == 2 { // ["-10:30 11:15-", "11:15-", "-10:30"]
         if nextEvent != nil && currentEvent != nil {
             // in einem Termin und ein weiter Folgt // "-10:30 11:15-"
-            return_string = "$END-$NEXTSTART"
+            return_string = "-$END $NEXTSTART-"
         } else if nextEvent != nil {
             // in keinem Termin und ein Termin folgt // "11:15-"
             return_string = "$NEXTSTART-"
