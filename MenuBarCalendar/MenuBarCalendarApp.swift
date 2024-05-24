@@ -98,7 +98,7 @@ class Event {
     }
 }
 
-//* VIEWS
+//* MARK: VIEWS
 // =======================================================================
 // =======================================================================
 
@@ -218,41 +218,7 @@ struct AppMenu: View {
     }
 }
 
-func getEventList_texts() -> [String] {
-    var return_string = ""
-    
-    //* return_string = "$DEFAULT" // Default
-    //* return_string = "$DIVIDER$IMPORTANT$DIVIDER$APISHORT$LINEBREAK$APILONG" // zeige API Text
-    // return_string = "$DIVIDERStand: $CALENDARDATE Uhr$DIVIDERHi$EMPTYLINE$EMPTYLINE$LINEBREAK$DEFAULT$DIVIDER$APISHORT$LINEBREAK$APILONG" // einfach ein test
-
-    return_string += "$DIVIDER" // sodass immer mit eine div beendet wird
-
-    while return_string.contains("$DIVIDER$DIVIDER") {
-        return_string.replace("$DIVIDER$DIVIDER", with: "$DIVIDER")
-    }
-
-    //                    "$LINEBREAK"
-    return_string.replace("$DEFAULT", with: "Termine der nächsten 24h")
-    return_string.replace("$APISHORT", with: getAPISHORT_ele())
-    return_string.replace("$APILONG", with: getAPILONG_ele())
-    return_string.replace("$APIDATE", with: getAPIDATE())
-    return_string.replace("$CALENDARDATE", with: getCALENDARDATE())
-    return_string.replace("$IMPORTANT", with: getIMPORTANT_ele()) //* $IMPORTANT umbennen?
-    return_string.replace("$DIVIDER", with: "$LINEBREAK$DIVIDER$LINEBREAK") // sodass $DIVIDER ein einzelnes element im array ist
-    return_string.replace("$EMPTYLINE", with: "$LINEBREAK$EMPTYLINE$LINEBREAK") 
-
-    var lines = return_string.components(separatedBy: "$LINEBREAK")
-    if lines.first == "" {
-        lines.removeFirst()
-    }
-    if lines.last == "" {
-        lines.removeLast()
-    }
-
-    return lines
-}
-
-//* Kaländer auslesen
+//* MARK: Kaländer auslesen
 // =======================================================================
 // =======================================================================
 
@@ -360,10 +326,43 @@ class EventManager: ObservableObject {
 }
 
 
-//* get Functions
+//* MARK: get Functions
 // =======================================================================
 // =======================================================================
 
+func getEventList_texts() -> [String] {
+    var return_string = ""
+    
+    //* return_string = "$DEFAULT" // Default
+    //* return_string = "$DIVIDER$IMPORTANT$DIVIDER$APISHORT$LINEBREAK$APILONG" // zeige API Text
+    // return_string = "$DIVIDERStand: $CALENDARDATE Uhr$DIVIDERHi$EMPTYLINE$EMPTYLINE$LINEBREAK$DEFAULT$DIVIDER$APISHORT$LINEBREAK$APILONG" // einfach ein test
+
+    return_string += "$DIVIDER" // sodass immer mit eine div beendet wird
+
+    while return_string.contains("$DIVIDER$DIVIDER") {
+        return_string.replace("$DIVIDER$DIVIDER", with: "$DIVIDER")
+    }
+
+    //                    "$LINEBREAK"
+    return_string.replace("$DEFAULT", with: "Termine der nächsten 24h")
+    return_string.replace("$APISHORT", with: getAPISHORT_ele())
+    return_string.replace("$APILONG", with: getAPILONG_ele())
+    return_string.replace("$APIDATE", with: getAPIDATE())
+    return_string.replace("$CALENDARDATE", with: getCALENDARDATE())
+    return_string.replace("$IMPORTANT", with: getIMPORTANT_ele()) //* $IMPORTANT umbennen?
+    return_string.replace("$DIVIDER", with: "$LINEBREAK$DIVIDER$LINEBREAK") // sodass $DIVIDER ein einzelnes element im array ist
+    return_string.replace("$EMPTYLINE", with: "$LINEBREAK$EMPTYLINE$LINEBREAK") 
+
+    var lines = return_string.components(separatedBy: "$LINEBREAK")
+    if lines.first == "" {
+        lines.removeFirst()
+    }
+    if lines.last == "" {
+        lines.removeLast()
+    }
+
+    return lines
+}
 
 func getMenuBarText(events: [Event]) -> String {
     // print(events) // ToDo getMenuBarText() wird beim Start zweimal aufgerufen
@@ -564,7 +563,7 @@ func getDOT_ele () -> String {
 }
 
 
-//* MARKBasics Date Functions
+//* MARK: Basics Date Functions
 // =======================================================================
 // =======================================================================
 
