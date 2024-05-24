@@ -366,6 +366,8 @@ class EventManager: ObservableObject {
 
 
 func getMenuBarText(events: [Event]) -> String {
+    // print(events) // ToDo getMenuBarText() wird beim Start zweimal aufgerufen
+    
     var return_string = "$APISHORT $IMPORTANT $TIMES"
 
     //* $IMPORTANT umbennen?
@@ -374,7 +376,7 @@ func getMenuBarText(events: [Event]) -> String {
     return_string.replace("$IMPORTANT", with: getIMPORTANT_ele())
     return_string.replace("$TIMES", with: getTIMES_ele(events: events))
     
-    return return_string
+    return return_string.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 func getTIMES_ele(events: [Event]) -> String {
@@ -397,14 +399,9 @@ func getTIMES_ele(events: [Event]) -> String {
     }
 
     
-    
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    
-    if nextEvent == nil {
-        return ""
-    }
 
     var currentEventStartTime = ""
     if currentEvent != nil {
@@ -435,7 +432,6 @@ func getTIMES_ele(events: [Event]) -> String {
     }
     
     var return_string = "$EMPTY" // $START, $END, $NEXTSTART, $NEXTEND, $EMPTY (wenn kein Event mehr in den nächsten 24h)
-    
     
     // Zeigt nur BeginnUhrzeit, falls ein Termin Vorhanden ist
     if menuBarTextType == 0 {// ["11:15", "-"]
@@ -549,7 +545,7 @@ func getEVENT_ele(event: Event) -> String {
     return_string.replace("$CALENDARNAME", with: event.calendarName)
         return_string.replace("$CALNAME", with: event.calendarName)
     
-    return return_string
+    return return_string.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 func getDOT_ele () -> String {
