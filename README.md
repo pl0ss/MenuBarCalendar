@@ -14,4 +14,4 @@ Zusätzlich werden alle relevanten Termine der nächsten 24 Stunden angezeigt.
 - ...
 
 ## Bilder
-<img width="236" alt="Bildschirmfoto 2024-05-21 um 15 52 43" src="https://github.com/pl0ss/MenuBarCalendar/assets/65730791/19012994-3ba9-4f10-8a5e-bb4c985c1223">
+<img width="236" alt="MenuBarCalendar_v0 1" src="https://github.com/pl0ss/MenuBarCalendar/assets/65730791/9bfb2d2a-7eb2-4c19-84b4-e5cf5dd77dae">
