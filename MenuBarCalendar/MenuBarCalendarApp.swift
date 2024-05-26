@@ -55,12 +55,11 @@ import Combine
             // als "gelesen" markieren können, sodass dieser Emoji für heute nicht mehr angezeigt wird
 
 
-// ToDo: in info.plist Application is agent auf YES stellen
-    // falls deaktiviert (NO)
 // ToDo: weitern Timer auf Beginnuhrzeit des Termins bzw der Enduhrzeit des aktuellen Termins stellen und dann View Refreshen und danach Timer erneut stellen
 
 
 //* Setting
+private let devmode = true
 private var menuBarTextType = 2
     // 0: "11:15"
     // 1: "- 10:30 11:15 -"  // zeigt immer Zwei zeiten an
@@ -73,8 +72,10 @@ private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
 private var noEventString = ":)" // kein kein Termin in den nächsten 24h
 private var calendarDate: Date?; // Von wann die Kalenderdaten sind
 
+private let appVersion = "0.1"
 
-class Event {
+
+struct Event {
     var title: String
     var startDate: Date
     var endDate: Date
@@ -84,28 +85,17 @@ class Event {
     var differenct_date: Bool // für die Unterteilung zischen verschiedenen Tagen
     var most_important_event: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
-    
-    init(title: String, startDate: Date, endDate: Date, location: String, color: NSColor, calendarName: String, differenct_date: Bool, most_important_event: Bool, multiple_days_info: String) {
-        self.title = title
-        self.startDate = startDate
-        self.endDate = endDate
-        self.location = location
-        self.color = color
-        self.calendarName = calendarName
-        self.differenct_date = differenct_date
-        self.most_important_event = most_important_event
-        self.multiple_days_info = multiple_days_info
-    }
 }
 
-//* MARK: VIEWS
+
+//* MARK: VIEW: MenuBar
 // =======================================================================
 // =======================================================================
 
 
 @main
 struct CustomApp: App {
-    @StateObject private var eventManager = EventManager()
+    @State private var eventManager = EventManager()
     
     var body: some Scene {
         // Icon in MenuBar
@@ -117,14 +107,18 @@ struct CustomApp: App {
         // Text in MenuBar
 
         MenuBarExtra(getMenuBarText(events: eventManager.events)) {
-            AppMenu(eventManager: eventManager, events: eventManager.events)
-                // "eventManager: eventManager" ist für "eventManager.refresh()" in "struct AppMenu"
+            AppMenu(
+                eventManager: eventManager,
+                settingsWindowController: .init(eventManager: eventManager),
+                events: eventManager.events
+            )
         }
     }
 }
 
 struct AppMenu: View {
-    @ObservedObject var eventManager: EventManager
+    @Bindable var eventManager: EventManager
+    var settingsWindowController: SettingsWindowController
     
     var events: [Event]
     
@@ -140,8 +134,8 @@ struct AppMenu: View {
         eventManager.refresh()
     }
     
-    func settings_open() {
-        
+    @MainActor func settings_open() {
+        settingsWindowController.showWindow()
     }
     
     
@@ -165,11 +159,7 @@ struct AppMenu: View {
                 }
                 
                 // Einzenler Termin
-                if events[index].most_important_event { // Event, welches in der MenuBar angezigt wird, hervorheben
-                    Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index])).underline() })
-                } else {
-                    Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index])) })
-                }
+                Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index])).underline(events[index].most_important_event) })
                 
                 if events[index].multiple_days_info != "" {
                     Text(events[index].multiple_days_info)
@@ -218,13 +208,81 @@ struct AppMenu: View {
     }
 }
 
+
+//* MARK: VIEW: Einstellungen
+// =======================================================================
+// =======================================================================
+
+class SettingsWindowController: NSObject, NSWindowDelegate {
+    var eventManager: EventManager
+    
+    init(eventManager: EventManager) {
+        self.eventManager = eventManager
+        super.init()
+    }
+    
+    @MainActor func showWindow() {
+        // prüfen ob einstellungen bereits geöffnet sind
+        if let window = NSApp.windows.first(where: { $0.title == "MenuBarCalendar" }) {
+            // wenn ja, dann in den vordergrund bringen
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        } else {
+            NSApp.setActivationPolicy(.regular) // sodass ein app icon in der dock angezeigt wird
+            let settingsView = SettingsView(eventManager: eventManager)
+            let hostingController = NSHostingController(rootView: settingsView)
+            let window = NSWindow(contentViewController: hostingController)
+            window.setContentSize(NSSize(width: 300, height: 200))
+            window.title = "MenuBarCalendar"
+            window.styleMask = [.titled, .closable, .resizable]
+            window.delegate = self
+            window.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        if NSApp.windows.allSatisfy({ $0.title != "MenuBarCalendar" }) {
+            NSApp.setActivationPolicy(.accessory) // sodass nach dem schließen der app kein app icon mehr in der dock angezigt wird
+        }
+    }
+}
+
+
+struct SettingsView: View {
+    @Bindable var eventManager: EventManager
+    
+    func menuBarTextType_change() {
+        menuBarTextType = (menuBarTextType + 1) % 4 //! 4
+        eventManager.refresh()
+        print(menuBarTextType)
+    }
+    
+    var body: some View {
+        VStack {
+            Text("MenuBarCalendar").bold()
+            Text("Version: \(appVersion)")
+            Text("made by Kev - May 2024")
+            Link("GitHub", destination: URL(string: "https://github.com/pl0ss/MenuBarCalendar")!)
+            
+            Text("Einstellungen").font(.largeTitle)
+            Text("menuBarTextType [0-3] Aktuell: \(menuBarTextType)") // ToDo: neuen Wert anzeigen, wenn er sich ändert
+            Button(action: menuBarTextType_change, label: { Text("Ändern") })
+
+        }
+        .padding()
+        // .frame(width: 300, height: 200)
+    }
+}
+
 //* MARK: Kaländer auslesen
 // =======================================================================
 // =======================================================================
 
 //* von GPT
-class EventManager: ObservableObject {
-    @Published var events: [Event] = []
+@Observable
+final class EventManager {
+    var events: [Event] = []
     
     private var timer: Timer?
     private let eventStore = EKEventStore()
@@ -259,16 +317,19 @@ class EventManager: ObservableObject {
     }
     
     func fetchEvents() {
-        calendarDate = date_getNow()
+        if(devmode) {
+            print(date_to_datumZeit_string(date: dateNow()))
+        }
         
-        let nowUTC = Date()
-        let end = Calendar.current.date(byAdding: .day, value: 1, to: nowUTC)!
+        calendarDate = dateNow()
         
-        let predicate = eventStore.predicateForEvents(withStart: nowUTC, end: end, calendars: nil)
+        let now = dateNow()
+        let end = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+        
+        let predicate = eventStore.predicateForEvents(withStart: now, end: end, calendars: nil)
         let ekEvents = eventStore.events(matching: predicate)
         
         var lastEvent: EKEvent? = nil
-        let now = date_getNow()
         var most_important_event_set = false
         
         DispatchQueue.main.async {
@@ -284,13 +345,13 @@ class EventManager: ObservableObject {
                     location = location.replacingOccurrences(of: ele[0], with: ele[1])
                 }
                 
-                var differenct_date = false // für die Unterteilung zischen verschiedenen Tagen
-                if (lastEvent != nil) && date_to_date_string(date: lastEvent!.startDate) != date_to_date_string(date: thisEvent.startDate) {
+                var differenct_date = false // für die Unterteilung zwischen verschiedenen Tagen
+                if (lastEvent != nil) && (date_to_datum_string(date: lastEvent!.startDate) != date_to_datum_string(date: thisEvent.startDate)) {
                     differenct_date = true
                 }
                 
                 var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
-                if date_to_local(date: thisEvent.startDate) > now && !most_important_event_set {
+                if thisEvent.startDate > now && !most_important_event_set {
                     most_important_event = true
                     most_important_event_set = true
                 }
@@ -382,19 +443,18 @@ func getTIMES_ele(events: [Event]) -> String {
     // Sucht den ersten Termin, welcher in der Zukunft beginnt
         // und gibt diesen als "menuBarText" zurück
     
-    var currentEvent: Event? = nil
-    var nextEvent: Event? = nil
+    let now = dateNow()
     
-    let now = date_getNow()
-    for i in 0..<events.count {
-        if date_to_local(date: events[i].startDate) > now {
-            nextEvent = events[i]
-            
-            if i > 0 {
-                currentEvent = events[i - 1]
-            }
+    var currentEvent: Event?
+    var nextEvent: Event?
+    
+    for event in events {
+        if event.startDate > now {
+            nextEvent = event
+
             break
         }
+        currentEvent = event
     }
 
     
@@ -511,7 +571,7 @@ func getIMPORTANT_ele() -> String {
 }
 
 func getAPIDATE() -> String {
-    let date = date_getNow() // ToDo
+    let date = dateNow() // ToDo
     return date_to_time_string(date: date)
 }
 
@@ -567,28 +627,13 @@ func getDOT_ele () -> String {
 // =======================================================================
 // =======================================================================
 
-func date_to_local(date: Date) -> Date {
-    let calendar = Calendar.current
-    let timeZone = TimeZone.current
-    let components = calendar.dateComponents(in: timeZone, from: date)
-    
-    return calendar.date(from: components)!
-}
+func dateNow() -> Date {
+    if(devmode) {
+        let now = date_offset(date: .now, days: -1, hours: 5)
+        return now
+    }
 
-func date_getUTCnow() -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.timeZone = TimeZone(identifier: "UTC")
-    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let nowUTC = Date()
-    return nowUTC
-}
-
-func date_getNow() -> Date {
-    let dateFormatter = DateFormatter()
-    dateFormatter.timeZone = TimeZone.current
-    dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-    let now = Date()
-    return now
+    return .now
 }
 
 func string_to_date(str: String) -> Date {
@@ -597,8 +642,8 @@ func string_to_date(str: String) -> Date {
     return dateFormatter.date(from: str)!
 }
 
-func date_offset(date: Date = date_getNow(), years: Int = 0, months: Int = 0, days: Int = 0, hours: Int = 0, minutes: Int = 0, seconds: Int = 0, mitternacht: Bool = false) -> Date {
-    var calendar = Calendar.current
+func date_offset(date: Date = dateNow(), years: Int = 0, months: Int = 0, days: Int = 0, hours: Int = 0, minutes: Int = 0, seconds: Int = 0, mitternacht: Bool = false) -> Date {
+    let calendar = Calendar.current
     var dateComponents = DateComponents()
     
     dateComponents.year = years
@@ -620,10 +665,8 @@ func date_offset(date: Date = date_getNow(), years: Int = 0, months: Int = 0, da
 }
 
 func date_to_dateTime_string(date: Date) -> String { // "yyyy-MM-dd HH:mm:ss"
-    if date == nil {return ""}
-    
     let dateFormatter = DateFormatter()
-    dateFormatter.timeZone = TimeZone.current
+    dateFormatter.timeZone = TimeZone(identifier: "UTC")
     dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     let dateStringLocal = dateFormatter.string(from: date)
     
@@ -631,8 +674,6 @@ func date_to_dateTime_string(date: Date) -> String { // "yyyy-MM-dd HH:mm:ss"
 }
 
 func date_to_datumZeit_string(date: Date) -> String { // "dd.MM.yyyy HH:mm:ss"
-    if date == nil {return ""}
-    
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = TimeZone.current
     dateFormatter.dateFormat = "dd.MM.yyyy HH:mm:ss"
@@ -669,7 +710,7 @@ func date_to_timeSec_string(date: Date) -> String { // "HH:mm:ss"
 
 func date_to_dateName(date: Date) -> String { // ["Yesterday", "Today", "Tomorrow"], "yyyy-MM-dd"
     let dateString = date_to_date_string(date: date)
-    let dateStringToday = date_to_date_string(date: date_getNow())
+    let dateStringToday = date_to_date_string(date: dateNow())
     let dateStringTomorrow = date_to_date_string(date: date_offset(days: 1))
     let dateStringYesterday = date_to_date_string(date: date_offset(days: -1))
     
@@ -686,7 +727,7 @@ func date_to_dateName(date: Date) -> String { // ["Yesterday", "Today", "Tomorro
 
 func date_to_datumName(date: Date) -> String { // ["Gestern", "Heute", "Morgen"], "yyyy-MM-dd"
     let dateString = date_to_datum_string(date: date)
-    let dateStringToday = date_to_datum_string(date: date_getNow())
+    let dateStringToday = date_to_datum_string(date: dateNow())
     let dateStringTomorrow = date_to_datum_string(date: date_offset(days: 1))
     let dateStringYesterday = date_to_datum_string(date: date_offset(days: -1))
     
@@ -703,7 +744,7 @@ func date_to_datumName(date: Date) -> String { // ["Gestern", "Heute", "Morgen"]
 
 func date_to_dateName_long(date: Date) -> String { // ["Yesterday", "Today", "Tomorrow"], "yyyy-MM-dd"
     let dateString = date_to_date_string(date: date)
-    let dateStringToday = date_to_date_string(date: date_getNow())
+    let dateStringToday = date_to_date_string(date: dateNow())
     let dateStringTomorrow = date_to_date_string(date: date_offset(days: 1))
     let dateStringYesterday = date_to_date_string(date: date_offset(days: -1))
     
@@ -720,7 +761,7 @@ func date_to_dateName_long(date: Date) -> String { // ["Yesterday", "Today", "To
 
 func date_to_datumName_long(date: Date) -> String { // ["Gestern", "Heute", "Morgen"], "yyyy-MM-dd"
     let dateString = date_to_datum_string(date: date)
-    let dateStringToday = date_to_datum_string(date: date_getNow())
+    let dateStringToday = date_to_datum_string(date: dateNow())
     let dateStringTomorrow = date_to_datum_string(date: date_offset(days: 1))
     let dateStringYesterday = date_to_datum_string(date: date_offset(days: -1))
     
