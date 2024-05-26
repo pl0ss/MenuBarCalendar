@@ -59,7 +59,7 @@ import Combine
 
 
 //* Setting
-private let devmode = true
+private let devmode = false
 private var menuBarTextType = 2
     // 0: "11:15"
     // 1: "- 10:30 11:15 -"  // zeigt immer Zwei zeiten an
@@ -72,7 +72,7 @@ private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
 private var noEventString = ":)" // kein kein Termin in den nächsten 24h
 private var calendarDate: Date?; // Von wann die Kalenderdaten sind
 
-private let appVersion = "0.1"
+private let appVersion = "0.2"
 
 
 struct Event {
