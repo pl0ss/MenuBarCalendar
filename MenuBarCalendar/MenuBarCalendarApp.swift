@@ -69,7 +69,8 @@ private var showColorDots = 1; // [0: neineDots, 1: kleineDots: ⦁, 2: große D
 private var eventNameReplace = [["IB_", ""]]
 private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
 private var noEventString = ":)" // kein kein Termin in den nächsten 24h
-private var calendarDate: Date?; // Von wann die Kalenderdaten sind
+private var calendarDate: Date? // Von wann die Kalenderdaten sind
+private var ganztaegigeEvents = false // ganztaegigeEvents in der MenuBar anzeigen?
 
 private let appVersion = "0.2"
 
@@ -84,6 +85,7 @@ struct Event {
     var differenct_date: Bool // für die Unterteilung zischen verschiedenen Tagen
     var most_important_event: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
+    var allDay: Bool // true wenn Event ganztätig ist
 }
 
 
@@ -352,10 +354,17 @@ final class EventManager {
                 if (lastEvent != nil) && (date_to_datum_string(date: lastEvent!.startDate) != date_to_datum_string(date: thisEvent.startDate)) {
                     differenct_date = true
                 }
+
+                var allDay = false
+                if(date_to_uhrzeitSek_string(date: thisEvent.startDate) == "00:00:00" && date_to_uhrzeitSek_string(date: thisEvent.endDate) == "23:59:59") {
+                    allDay = true
+                }
                 
                 var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
-                if thisEvent.startDate > now && thisEvent.startDate < date_offset(days: 1) && !most_important_event_set {
-                    // wenn startDate in den nächsten 24h ist und most_important_event noch nicht gesetzt wurde
+                if (thisEvent.startDate > now && thisEvent.startDate < date_offset(days: 1)) // wenn startDate in den nächsten 24h ist
+                 && !most_important_event_set // most_important_event noch nicht gesetzt wurde
+                 && (ganztaegigeEvents || (!allDay && !ganztaegigeEvents)) // sind ganztätigEvents in MenuBar erwünscht?
+                {
                     most_important_event = true
                     most_important_event_set = true
                 }
@@ -367,8 +376,9 @@ final class EventManager {
                     multiple_days_info = "   \(dateStringStart) - \(dateStringEnd)"
                 }
                 
+                
+                
                 lastEvent = thisEvent
-
                 
                 return Event(
                     title: title,
@@ -379,7 +389,8 @@ final class EventManager {
                     calendarName: thisEvent.calendar.title,
                     differenct_date: differenct_date,
                     most_important_event: most_important_event,
-                    multiple_days_info: multiple_days_info
+                    multiple_days_info: multiple_days_info,
+                    allDay: allDay
                 )
             }
         }
@@ -453,6 +464,10 @@ func getTIMES_ele(events: [Event]) -> String {
     var nextEvent: Event?
     
     for event in events {
+        if event.allDay && !ganztaegigeEvents { // sind ganztätigEvents in MenuBar erwünscht? 
+            continue
+        }
+        
         if(event.startDate >= date_offset(days: 1)) {
             // nur die events der nächsten 24h betrachten
             break
@@ -580,11 +595,11 @@ func getIMPORTANT_ele() -> String {
 
 func getAPIDATE() -> String {
     let date = dateNow() // ToDo
-    return date_to_time_string(date: date)
+    return date_to_uhrzeit_string(date: date)
 }
 
 func getCALENDARDATE() -> String {
-    return date_to_time_string(date: calendarDate!)
+    return date_to_uhrzeit_string(date: calendarDate!)
 }
 
 
@@ -709,8 +724,21 @@ func date_to_time_string(date: Date) -> String { // "HH:mm"
     return "\(dateComponents[0]):\(dateComponents[1])"
 }
 
+func date_to_uhrzeit_string(date: Date) -> String { // "HH:mm"
+    let dateString = date_to_datumZeit_string(date: date)
+    let dateComponents = dateString.components(separatedBy: " ")[1].components(separatedBy: ":")
+    
+    return "\(dateComponents[0]):\(dateComponents[1])"
+}
+
 func date_to_timeSec_string(date: Date) -> String { // "HH:mm:ss"
     let dateString = date_to_dateTime_string(date: date)
+    
+    return dateString.components(separatedBy: " ")[1]
+}
+
+func date_to_uhrzeitSek_string(date: Date) -> String { // "HH:mm:ss"
+    let dateString = date_to_datumZeit_string(date: date)
     
     return dateString.components(separatedBy: " ")[1]
 }
