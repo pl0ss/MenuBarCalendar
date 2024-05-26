@@ -14,8 +14,8 @@
             filePath = "MenuBarCalendar/MenuBarCalendarApp.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "541"
-            endingLineNumber = "541"
+            startingLineNumber = "546"
+            endingLineNumber = "546"
             landmarkName = "getTIMES_ele(events:)"
             landmarkType = "9">
          </BreakpointContent>

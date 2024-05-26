@@ -57,8 +57,6 @@ import Combine
 
 // ToDo: weitern Timer auf Beginnuhrzeit des Termins bzw der Enduhrzeit des aktuellen Termins stellen und dann View Refreshen und danach Timer erneut stellen
 
-// ToDo: ... bei Morgen anzeigen, wenn es noch weitere events morgen gibt
-
 //* Setting
 private let devmode = false
 private var menuBarTextType = 2
@@ -328,7 +326,8 @@ final class EventManager {
         calendarDate = dateNow()
         
         let now = dateNow()
-        let end = Calendar.current.date(byAdding: .day, value: 1, to: now)!
+        // let end = Calendar.current.date(byAdding: .day, value: 1, to: now)! // nächsten 24h
+        let end = date_offset(days: 2, mitternacht: true) // nächsten 24h + bis mitternacht
         
         let predicate = eventStore.predicateForEvents(withStart: now, end: end, calendars: nil)
         let ekEvents = eventStore.events(matching: predicate)
@@ -355,7 +354,8 @@ final class EventManager {
                 }
                 
                 var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
-                if thisEvent.startDate > now && !most_important_event_set {
+                if thisEvent.startDate > now && thisEvent.startDate < date_offset(days: 1) && !most_important_event_set {
+                    // wenn startDate in den nächsten 24h ist und most_important_event noch nicht gesetzt wurde
                     most_important_event = true
                     most_important_event_set = true
                 }
@@ -453,6 +453,10 @@ func getTIMES_ele(events: [Event]) -> String {
     var nextEvent: Event?
     
     for event in events {
+        if(event.startDate >= date_offset(days: 1)) {
+            // nur die events der nächsten 24h betrachten
+            break
+        }
         if event.startDate > now {
             nextEvent = event
 
@@ -633,7 +637,7 @@ func getDOT_ele () -> String {
 
 func dateNow() -> Date {
     if(devmode) {
-        let now = date_offset(date: .now, days: -1, hours: 5)
+        let now = date_offset(date: .now, days: -1, hours: 2)
         return now
     }
 
