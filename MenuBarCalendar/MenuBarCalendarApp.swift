@@ -57,6 +57,7 @@ import Combine
 
 // ToDo: weitern Timer auf Beginnuhrzeit des Termins bzw der Enduhrzeit des aktuellen Termins stellen und dann View Refreshen und danach Timer erneut stellen
 
+// ToDo: ... bei Morgen anzeigen, wenn es noch weitere events morgen gibt
 
 //* Setting
 private let devmode = false
@@ -240,10 +241,13 @@ class SettingsWindowController: NSObject, NSWindowDelegate {
             NSApp.activate(ignoringOtherApps: true)
         }
     }
-
-    func windowWillClose(_ notification: Notification) {
-        if NSApp.windows.allSatisfy({ $0.title != "MenuBarCalendar" }) {
-            NSApp.setActivationPolicy(.accessory) // sodass nach dem schließen der app kein app icon mehr in der dock angezigt wird
+    
+    func windowWillClose(_ notification: Notification) { //! geht nicht wenn "menuBarTextType Ändern" button gedrückt wurde
+        DispatchQueue.main.async {
+            // print("Schließen")
+            if NSApp.windows.allSatisfy({ $0.title != "MenuBarCalendar" }) {
+                NSApp.setActivationPolicy(.accessory) // sodass nach dem schließen der app kein app icon mehr in der dock angezigt wird
+            }
         }
     }
 }
@@ -267,7 +271,7 @@ struct SettingsView: View {
             
             Text("Einstellungen").font(.largeTitle)
             Text("menuBarTextType [0-3] Aktuell: \(menuBarTextType)") // ToDo: neuen Wert anzeigen, wenn er sich ändert
-            Button(action: menuBarTextType_change, label: { Text("Ändern") })
+            Button(action: menuBarTextType_change, label: { Text("menuBarTextType Ändern") })
 
         }
         .padding()
