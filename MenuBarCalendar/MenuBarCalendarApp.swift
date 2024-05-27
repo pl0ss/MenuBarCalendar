@@ -27,6 +27,8 @@ import Combine
         // Text, wenn Kalender leer ist
         // Toggle, ob man die Color Dots haben will
         // locationReplace festlegen und togglen können
+        // Anzahl der Termine hinters Datum zB Heute 27.05.2024 (4)
+            // option, erst ab >= 3 anzeigen
 
         // Events ingonieren
             // Sodass diese nicht in der MenuBar angezeigt werden (aber Trotzdem in der Event Liste)
@@ -420,7 +422,7 @@ func getEventList_texts() -> [String] {
     }
 
     //                    "$LINEBREAK"
-    return_string.replace("$DEFAULT", with: "Termine der nächsten 24h")
+    return_string.replace("$DEFAULT", with: "")
     return_string.replace("$APISHORT", with: getAPISHORT_ele())
     return_string.replace("$APILONG", with: getAPILONG_ele())
     return_string.replace("$APIDATE", with: getAPIDATE())
