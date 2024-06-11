@@ -57,7 +57,7 @@ import Combine
             // als "gelesen" markieren können, sodass dieser Emoji für heute nicht mehr angezeigt wird
 
 
-// ToDo: weitern Timer auf Beginnuhrzeit des Termins bzw der Enduhrzeit des aktuellen Termins stellen und dann View Refreshen und danach Timer erneut stellen
+// ToDo: Timer für neuen refresh stellen min($nächstesEvent +1sek, $refreshInterval), sodass ein refresh stattfindet, wenn der aktuelle termin zu ende ist
 
 //* Setting
 private let devmode = false
@@ -85,7 +85,8 @@ struct Event {
     var color: NSColor
     var calendarName: String
     var differenct_date: Bool // für die Unterteilung zischen verschiedenen Tagen
-    var most_important_event: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
+    var isCurrentEvent: Bool  // aktuelle Event[s], hervorheben
+    var isNextEvent: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
     var allDay: Bool // true wenn Event ganztätig ist
 }
@@ -162,7 +163,12 @@ struct AppMenu: View {
                 }
                 
                 // Einzenler Termin
-                Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index])).underline(events[index].most_important_event) })
+                Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index]))
+                        // aktuelles Event[s] Fett
+                        .font(.system(size: 13, weight: events[index].isCurrentEvent ? .bold : .regular))
+                        // nächstes Event Unterstrichen
+                        .underline(events[index].isNextEvent)
+                })
                 
                 if events[index].multiple_days_info != "" {
                     Text(events[index].multiple_days_info)
@@ -337,7 +343,7 @@ final class EventManager {
         let ekEvents = eventStore.events(matching: predicate)
         
         var lastEvent: EKEvent? = nil
-        var most_important_event_set = false
+        var isNextEvent_isSet = false
         
         DispatchQueue.main.async {
             self.events = ekEvents.map { thisEvent in
@@ -362,13 +368,18 @@ final class EventManager {
                     allDay = true
                 }
                 
-                var most_important_event = false // Event, welches in der MenuBar angezigt wird, hervorheben
+                var isCurrentEvent = false
+                if(thisEvent.startDate < now && thisEvent.endDate > now) {
+                    isCurrentEvent = true
+                }
+                
+                var isNextEvent = false // Event, welches in der MenuBar angezigt wird, hervorheben
                 if (thisEvent.startDate > now && thisEvent.startDate < date_offset(days: 1)) // wenn startDate in den nächsten 24h ist
-                 && !most_important_event_set // most_important_event noch nicht gesetzt wurde
+                 && !isNextEvent_isSet // isNextEvent noch nicht gesetzt wurde
                  && (ganztaegigeEvents || (!allDay && !ganztaegigeEvents)) // sind ganztätigEvents in MenuBar erwünscht?
                 {
-                    most_important_event = true
-                    most_important_event_set = true
+                    isNextEvent = true
+                    isNextEvent_isSet = true
                 }
                 
                 var multiple_days_info = ""
@@ -390,7 +401,8 @@ final class EventManager {
                     color: thisEvent.calendar.color,
                     calendarName: thisEvent.calendar.title,
                     differenct_date: differenct_date,
-                    most_important_event: most_important_event,
+                    isCurrentEvent: isCurrentEvent,
+                    isNextEvent: isNextEvent,
                     multiple_days_info: multiple_days_info,
                     allDay: allDay
                 )
