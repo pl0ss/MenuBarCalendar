@@ -164,10 +164,10 @@ struct AppMenu: View {
                 
                 // Einzenler Termin
                 Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index]))
-                        // aktuelles Event[s] Fett
-                        .font(.system(size: 13, weight: events[index].isCurrentEvent ? .bold : .regular))
-                        // nächstes Event Unterstrichen
-                        .underline(events[index].isNextEvent)
+                        // aktuelles Event Unterstrichen
+                        .underline(events[index].isCurrentEvent)
+                        // nächste Event[s] Fett
+                        .font(.system(size: 13, weight: events[index].isNextEvent ? .bold : .regular))
                 })
                 
                 if events[index].multiple_days_info != "" {
