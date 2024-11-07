@@ -73,6 +73,7 @@ private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
 private var noEventString = ":)" // kein kein Termin in den nächsten 24h
 private var calendarDate: Date? // Von wann die Kalenderdaten sind
 private var ganztaegigeEvents = false // ganztaegigeEvents in der MenuBar anzeigen?
+private var hideCalendars = ["THI_WS_2024"]
 
 private let appVersion = "0.2"
 
@@ -89,6 +90,7 @@ struct Event {
     var isNextEvent: Bool  // Event, welches in der MenuBar angezigt wird, hervorheben
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
     var allDay: Bool // true wenn Event ganztätig ist
+    var calendar_title: String
 }
 
 
@@ -150,30 +152,33 @@ struct AppMenu: View {
         
         return VStack { // Auflistung der Termine
             ForEach(events.indices, id: \.self) { index in
-                if index == 0 {
-                    // meistens "Heute"
-                    Button(action: action1, label: { Text(date_to_datumName_long(date: events[0].startDate)).font(.system(size: 14, weight: .bold)) })
+                if !hideCalendars.contains(events[index].calendar_title) {
+                    
+                    if index == 0 {
+                        // meistens "Heute"
+                        Button(action: action1, label: { Text(date_to_datumName_long(date: events[0].startDate)).font(.system(size: 14, weight: .bold)) })
+                    }
+                    
+                    // für die Unterteilung zischen verschiedenen Tagen
+                    if events[index].differenct_date {
+                        // meistens "Morgen"
+                        Divider()
+                        Button(action: action1, label: { Text(date_to_datumName_long(date: events[index].startDate)).font(.system(size: 14, weight: .bold)) })
+                    }
+                    
+                    // Einzenler Termin
+                    Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index]))
+                            // aktuelles Event Unterstrichen
+                            .underline(events[index].isCurrentEvent)
+                            // nächste Event[s] Fett
+                            .font(.system(size: 13, weight: events[index].isNextEvent ? .bold : .regular))
+                    })
+                    
+                    if events[index].multiple_days_info != "" {
+                        Text(events[index].multiple_days_info)
+                    }
+                    
                 }
-                
-                // für die Unterteilung zischen verschiedenen Tagen
-                if events[index].differenct_date {
-                    // meistens "Morgen"
-                    Divider()
-                    Button(action: action1, label: { Text(date_to_datumName_long(date: events[index].startDate)).font(.system(size: 14, weight: .bold)) })
-                }
-                
-                // Einzenler Termin
-                Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index]))
-                        // aktuelles Event Unterstrichen
-                        .underline(events[index].isCurrentEvent)
-                        // nächste Event[s] Fett
-                        .font(.system(size: 13, weight: events[index].isNextEvent ? .bold : .regular))
-                })
-                
-                if events[index].multiple_days_info != "" {
-                    Text(events[index].multiple_days_info)
-                }
-
             }
         }
 
@@ -404,7 +409,8 @@ final class EventManager {
                     isCurrentEvent: isCurrentEvent,
                     isNextEvent: isNextEvent,
                     multiple_days_info: multiple_days_info,
-                    allDay: allDay
+                    allDay: allDay,
+                    calendar_title: thisEvent.calendar.title
                 )
             }
         }
