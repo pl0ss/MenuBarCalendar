@@ -75,7 +75,7 @@ private var calendarDate: Date? // Von wann die Kalenderdaten sind
 private var ganztaegigeEvents = false // ganztaegigeEvents in der MenuBar anzeigen?
 private var hideCalendars = ["THI_WS_2024"] // Kalender, welche nicht beachtet werden sollen
 
-private let appVersion = "0.2"
+private let appVersion = "0.3"
 
 
 struct Event {
