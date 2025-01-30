@@ -73,7 +73,7 @@ private var eventLocationReplace = [[",Technische Hochschule Ingolstadt", ""]]
 private var noEventString = ":)" // kein kein Termin in den nächsten 24h
 private var calendarDate: Date? // Von wann die Kalenderdaten sind
 private var ganztaegigeEvents = false // ganztaegigeEvents in der MenuBar anzeigen?
-private var hideCalendars = ["THI_WS_2024"] // Kalender, welche nicht beachtet werden sollen
+private var hideCalendars = ["THI_WS_2024", "Zeitplan"] // Kalender, welche nicht beachtet werden sollen
 
 private let appVersion = "0.3"
 
@@ -91,6 +91,7 @@ struct Event {
     var multiple_days_info: String // wenn ein event über mehrere tage geht, dann von bis anzeigen
     var allDay: Bool // true wenn Event ganztätig ist
     var calendar_title: String
+    var isAllDay: Bool
 }
 
 
@@ -158,7 +159,7 @@ struct AppMenu: View {
                     Button(action: action1, label: { Text(date_to_datumName_long(date: events[0].startDate)).font(.system(size: 14, weight: .bold)) })
                 }
                 
-                // für die Unterteilung zischen verschiedenen Tagen
+                // für die Unterteilung zwischen verschiedenen Tagen
                 if events[index].differenct_date {
                     // meistens "Morgen"
                     Divider()
@@ -168,7 +169,7 @@ struct AppMenu: View {
                 // Einzenler Termin
                 Button(action: action1, label: { Text(getDOT_ele()).foregroundColor(Color(events[index].color)) + Text(getEVENT_ele(event: events[index]))
                         // aktuelles Event Unterstrichen
-                        .underline(events[index].isCurrentEvent)
+                        .underline(events[index].isCurrentEvent && !events[index].isAllDay)
                         // nächste Event[s] Fett
                         .font(.system(size: 13, weight: events[index].isNextEvent ? .bold : .regular))
                 })
@@ -355,6 +356,8 @@ final class EventManager {
         DispatchQueue.main.async {
             self.events = ekEvents.map { thisEvent in
                 
+                // print(thisEvent)
+                
                 var title = thisEvent.title.trimmingCharacters(in: .whitespacesAndNewlines)
                 for ele in eventNameReplace {
                     title = title.replacingOccurrences(of: ele[0], with: ele[1])
@@ -412,7 +415,8 @@ final class EventManager {
                     isNextEvent: isNextEvent,
                     multiple_days_info: multiple_days_info,
                     allDay: allDay,
-                    calendar_title: thisEvent.calendar.title
+                    calendar_title: thisEvent.calendar.title,
+                    isAllDay: thisEvent.isAllDay
                 )
             }
         }
@@ -640,7 +644,12 @@ func getEVENT_ele(event: Event) -> String {
     
     // let actionText = "\(eventStartTime)-\(eventEndTime) \(event.title) \(event.location)"
     
-    var return_string = "$EVENTSTART-$EVENTEND $TITLE $LOCATION"
+    var return_string = ""
+    if event.isAllDay {
+        return_string = "$TITLE $LOCATION"
+    } else {
+        return_string = "$EVENTSTART-$EVENTEND $TITLE $LOCATION"
+    }
 
     return_string.replace("$EVENTSTART", with: eventStartTime)
     return_string.replace("$EVENTEND", with: eventEndTime)
